@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function LoginPage() {
+function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -33,26 +33,36 @@ export default function LoginPage() {
   }
 
   return (
+    <>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          autoFocus
+          autoComplete="off"
+          style={styles.input}
+        />
+        <button type="submit" disabled={loading} style={styles.button}>
+          {loading ? 'Verifying...' : 'Enter'}
+        </button>
+      </form>
+      {error && <p style={styles.error}>{error}</p>}
+    </>
+  )
+}
+
+export default function LoginPage() {
+  return (
     <div style={styles.page}>
       <div style={styles.box}>
         <img src="/assets/images/vsp-logo.svg" alt="VSP" style={styles.logo} />
         <h2 style={styles.title}>Access Required</h2>
         <p style={styles.subtitle}>Enter the password to continue.</p>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            autoFocus
-            autoComplete="off"
-            style={styles.input}
-          />
-          <button type="submit" disabled={loading} style={styles.button}>
-            {loading ? 'Verifying...' : 'Enter'}
-          </button>
-        </form>
-        {error && <p style={styles.error}>{error}</p>}
+        <Suspense fallback={null}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   )
