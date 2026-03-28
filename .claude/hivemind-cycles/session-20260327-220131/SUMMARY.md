@@ -10,6 +10,7 @@
 |-------|-------|-------------|-------------|-----------|------------|
 | 1 | Full architecture — data model, auth, routing, client isolation | 10 | 8 | 8 | Platform issues (Vercel SSO, framework detection) took more time than code; file-based arch is correct |
 | 2 | Publishing skills — system-level skills for content workflow | 3 | 3 | 5 | System-level skills (~/.claude/skills/) are the right pattern for cross-repo operations |
+| 3 | Security hardening + logout | 5 | 4 | 4 | Security items are straightforward when done intentionally; should be included from cycle 1 |
 
 ## Completed Items (Do Not Re-Raise)
 
@@ -24,3 +25,7 @@
 - `/publish-report` skill for publishing HTML/PDF/MD to client portal folders
 - `/new-vsp-client` skill for scaffolding new clients with auto-generated passwords
 - `/vsp-deploy` skill for quick Vercel deploys with re-alias
+- VSP_SESSION_SECRET set as Vercel production env var
+- /api/logout endpoint with cookie clearing
+- LogoutButton on admin and portal pages
+- Security headers (X-Frame-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy)
