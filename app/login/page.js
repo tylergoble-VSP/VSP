@@ -52,89 +52,28 @@ function LoginForm() {
           placeholder="Password"
           autoFocus
           autoComplete="off"
-          style={styles.input}
+          className="login-input"
         />
-        <button type="submit" disabled={loading} style={styles.button}>
+        <button type="submit" disabled={loading} className="login-button">
           {loading ? 'Verifying...' : 'Enter'}
         </button>
       </form>
-      {error && <p style={styles.error}>{error}</p>}
+      {error && <p className="login-error">{error}</p>}
     </>
   )
 }
 
 export default function LoginPage() {
   return (
-    <div style={styles.page}>
-      <div style={styles.box}>
-        <img src="/assets/images/vsp-logo.svg" alt="Victory Square Partners" style={styles.logo} />
-        <h2 style={styles.title}>Access Required</h2>
-        <p style={styles.subtitle}>Enter your password to continue.</p>
+    <div className="login-page">
+      <div className="login-box">
+        <img src="/assets/images/vsp-logo.svg" alt="Victory Square Partners" className="vsp-logo" />
+        <h2 className="login-title">Access Required</h2>
+        <p className="login-subtitle">Enter your password to continue.</p>
         <Suspense fallback={null}>
           <LoginForm />
         </Suspense>
       </div>
     </div>
   )
-}
-
-const styles = {
-  page: {
-    minHeight: '100vh',
-    background: '#0f172a',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  box: {
-    textAlign: 'center',
-    padding: '48px',
-    maxWidth: '400px',
-    width: '90%',
-  },
-  logo: {
-    height: '36px',
-    marginBottom: '32px',
-  },
-  title: {
-    color: '#f8fafc',
-    fontSize: '20px',
-    fontWeight: 600,
-    marginBottom: '8px',
-  },
-  subtitle: {
-    color: '#94a3b8',
-    fontSize: '14px',
-    marginBottom: '24px',
-  },
-  input: {
-    width: '100%',
-    padding: '12px 16px',
-    borderRadius: '8px',
-    border: '1px solid #334155',
-    background: '#1e293b',
-    color: '#e2e8f0',
-    fontSize: '14px',
-    outline: 'none',
-    fontFamily: 'inherit',
-  },
-  button: {
-    width: '100%',
-    marginTop: '12px',
-    padding: '12px',
-    borderRadius: '8px',
-    border: 'none',
-    background: '#4a9eff',
-    color: '#fff',
-    fontSize: '14px',
-    fontWeight: 600,
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-  },
-  error: {
-    color: '#f87171',
-    fontSize: '13px',
-    marginTop: '12px',
-  },
 }
