@@ -479,6 +479,20 @@ a:hover { text-decoration: underline; }
     font-size: 11px;
     padding: 4px 12px;
   }
+
+  /* Mobile table safety net — pandoc tables scroll instead of overflowing */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 13px;
+    margin: 16px 0;
+  }
+  th, td {
+    padding: 8px 10px;
+    min-width: 60px;
+  }
+  .vsp-table { min-width: 320px; }
 }
 
 /* ── PRINT STYLES ── */
