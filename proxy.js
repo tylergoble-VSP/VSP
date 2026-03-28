@@ -13,6 +13,7 @@ export async function proxy(request) {
   if (
     pathname === '/login' ||
     pathname === '/api/login' ||
+    pathname === '/api/logout' ||
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/assets/') ||
     pathname.match(/\.(ico|svg|png|jpg|jpeg|gif|woff|woff2|css|js)$/)

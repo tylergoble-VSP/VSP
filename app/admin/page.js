@@ -1,5 +1,6 @@
 import { getAllClients, getClientReports } from '@/lib/clients.js'
 import Link from 'next/link'
+import LogoutButton from '@/app/components/LogoutButton.js'
 
 export const metadata = {
   title: 'Admin Dashboard — Victory Square Partners',
@@ -24,7 +25,10 @@ export default function AdminDashboard() {
         borderBottom: '1px solid #334155',
       }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 clamp(20px, 5vw, 48px)' }}>
-          <img src="/assets/images/vsp-logo.svg" alt="VSP" style={{ height: '32px', marginBottom: '24px', display: 'block' }} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+            <img src="/assets/images/vsp-logo.svg" alt="VSP" style={{ height: '32px' }} />
+            <LogoutButton />
+          </div>
           <div style={{
             display: 'inline-block',
             background: 'rgba(167,139,250,0.15)',

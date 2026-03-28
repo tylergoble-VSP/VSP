@@ -1,5 +1,6 @@
 import { getClient, getClientReports, getAllClientSlugs } from '@/lib/clients.js'
 import { notFound } from 'next/navigation'
+import LogoutButton from '@/app/components/LogoutButton.js'
 
 export async function generateStaticParams() {
   return getAllClientSlugs().map((slug) => ({ slug }))
@@ -35,6 +36,7 @@ export default async function ClientPortal({ params }) {
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 clamp(20px, 5vw, 48px)', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
             <img src="/assets/images/vsp-logo.svg" alt="VSP" style={{ height: '32px' }} />
+            <LogoutButton />
             {client.logo && (
               <img src={client.logo} alt={client.name} style={{ height: '36px' }} />
             )}
