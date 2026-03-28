@@ -404,6 +404,12 @@
       "passwordHash": "b95aad4f41b65104353bda732b66d3a0230f30a1952fbd62234312a225947697",
       "accentColor": "#b45309",
       "logo": null
+    },
+    "vsp-internal": {
+      "name": "VSP Internal",
+      "passwordHash": "662f91dd289b6d0cd92bd072ef47c121c8f57c0a27c2e9f81e54a296487cffd1",
+      "accentColor": "#1e40af",
+      "logo": null
     }
   }
 }
