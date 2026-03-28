@@ -398,6 +398,12 @@
       "passwordHash": "ce6bb202abe9d3930c527a65f0e5efce4a26bd113ab7beae38a0afc298a0a91b",
       "accentColor": "#7c3aed",
       "logo": null
+    },
+    "eagle-venture-fund": {
+      "name": "Eagle Venture Fund",
+      "passwordHash": "b95aad4f41b65104353bda732b66d3a0230f30a1952fbd62234312a225947697",
+      "accentColor": "#b45309",
+      "logo": null
     }
   }
 }

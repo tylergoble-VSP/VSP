@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/assets/css/vsp-theme.css">
+<title>Vip's VC Network — Clapham Community | VSP Intelligence Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17;
+  --card: #141925;
+  --card-hover: #1a2133;
+  --border: #1e293b;
+  --green: #10b981;
+  --blue: #3b82f6;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --purple: #8b5cf6;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --dim: #64748b;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+a { color:var(--blue); text-decoration:none; }
+a:hover { text-decoration:underline; }
+
+/* Header */
+.header { background:linear-gradient(135deg,#0f1629 0%,#1a1040 50%,#0f1629 100%); border-bottom:1px solid var(--border); padding:2.5rem 2rem 1.5rem; text-align:center; }
+.header h1 { font-size:2.2rem; font-weight:800; background:linear-gradient(135deg,var(--green),var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:.3rem; }
+.header .subtitle { color:var(--muted); font-size:.9rem; font-weight:400; }
+.header .badge { display:inline-block; background:rgba(16,185,129,.12); color:var(--green); font-size:.75rem; font-weight:600; padding:.25rem .75rem; border-radius:999px; margin-top:.75rem; border:1px solid rgba(16,185,129,.25); }
+
+/* Tabs */
+.tabs { display:flex; flex-wrap:wrap; gap:0; background:var(--card); border-bottom:2px solid var(--border); padding:0 1rem; overflow-x:auto; position:sticky; top:0; z-index:100; }
+.tab { padding:.85rem 1.1rem; font-size:.78rem; font-weight:500; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all .2s; white-space:nowrap; }
+.tab:hover { color:var(--text); background:rgba(255,255,255,.03); }
+.tab.active { color:var(--green); border-bottom-color:var(--green); font-weight:600; }
+
+/* Content */
+.content { max-width:1200px; margin:0 auto; padding:2rem 1.5rem; }
+.panel { display:none; }
+.panel.active { display:block; }
+
+/* Cards */
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:1.25rem; }
+.card:hover { border-color:rgba(59,130,246,.3); }
+.card h3 { font-size:1rem; font-weight:600; margin-bottom:.75rem; color:var(--green); }
+.card h4 { font-size:.85rem; font-weight:600; margin-bottom:.5rem; color:var(--text); }
+
+/* Tables */
+table { width:100%; border-collapse:collapse; font-size:.82rem; }
+th { text-align:left; padding:.6rem .75rem; background:rgba(16,185,129,.08); color:var(--green); font-weight:600; font-size:.75rem; text-transform:uppercase; letter-spacing:.5px; border-bottom:1px solid var(--border); }
+td { padding:.6rem .75rem; border-bottom:1px solid rgba(30,41,59,.5); color:var(--text); vertical-align:top; }
+tr:hover td { background:rgba(255,255,255,.02); }
+
+/* Tags */
+.tag { display:inline-block; padding:.15rem .5rem; border-radius:4px; font-size:.7rem; font-weight:500; margin:.1rem; }
+.tag-green { background:rgba(16,185,129,.15); color:var(--green); }
+.tag-blue { background:rgba(59,130,246,.15); color:var(--blue); }
+.tag-amber { background:rgba(245,158,11,.15); color:var(--amber); }
+.tag-purple { background:rgba(139,92,246,.15); color:var(--purple); }
+.tag-red { background:rgba(239,68,68,.15); color:var(--red); }
+
+/* Stats Grid */
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+.stat { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1.2rem; text-align:center; }
+.stat .num { font-size:1.8rem; font-weight:700; background:linear-gradient(135deg,var(--green),var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.stat .label { font-size:.72rem; color:var(--muted); margin-top:.25rem; text-transform:uppercase; letter-spacing:.5px; }
+
+/* Firm Header */
+.firm-header { display:flex; align-items:center; gap:1.5rem; margin-bottom:1.5rem; padding:1.5rem; background:linear-gradient(135deg,rgba(16,185,129,.05),rgba(59,130,246,.05)); border:1px solid var(--border); border-radius:12px; }
+.firm-icon { width:64px; height:64px; border-radius:12px; background:var(--card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:700; color:var(--green); flex-shrink:0; }
+.firm-meta { flex:1; }
+.firm-meta h2 { font-size:1.4rem; font-weight:700; margin-bottom:.25rem; }
+.firm-meta .loc { color:var(--muted); font-size:.85rem; }
+.firm-meta .url { font-size:.8rem; }
+.firm-tags { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.5rem; }
+
+/* Section Divider */
+.section-title { font-size:.8rem; font-weight:600; color:var(--dim); text-transform:uppercase; letter-spacing:1px; margin:2rem 0 .75rem; padding-bottom:.4rem; border-bottom:1px solid var(--border); }
+
+/* Network Graph (CSS-only) */
+.network-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1rem; }
+.net-node { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1rem; text-align:center; }
+.net-node h4 { font-size:.9rem; margin-bottom:.4rem; }
+.net-node .aum { font-size:1.1rem; font-weight:700; color:var(--green); }
+.net-node .geo { font-size:.75rem; color:var(--muted); }
+
+/* Faith badge */
+.faith-bar { background:linear-gradient(90deg,rgba(139,92,246,.1),rgba(16,185,129,.1)); border:1px solid rgba(139,92,246,.2); border-radius:8px; padding:1rem 1.25rem; margin-bottom:1rem; font-size:.85rem; line-height:1.7; color:var(--text); }
+.faith-bar strong { color:var(--purple); }
+
+/* Person Cards */
+.person { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.25rem; margin-bottom:1rem; }
+.person:hover { border-color:rgba(139,92,246,.3); }
+.person-header { display:flex; align-items:center; gap:1rem; margin-bottom:.75rem; }
+.person-avatar { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--blue)); display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:700; color:#fff; flex-shrink:0; }
+.person-name { font-size:1rem; font-weight:600; }
+.person-role { font-size:.8rem; color:var(--muted); }
+.person-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; font-size:.82rem; }
+.person-grid dt { color:var(--dim); font-weight:500; }
+.person-grid dd { color:var(--text); margin:0 0 .5rem; }
+.person-quote { background:rgba(139,92,246,.08); border-left:3px solid var(--purple); padding:.6rem 1rem; margin:.75rem 0; font-size:.82rem; font-style:italic; color:var(--text); border-radius:0 6px 6px 0; }
+.person-angle { background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.2); border-radius:8px; padding:.75rem 1rem; margin-top:.75rem; font-size:.82rem; }
+.person-angle strong { color:var(--green); }
+@media(max-width:768px) { .person-grid { grid-template-columns:1fr; } }
+
+/* Responsive */
+@media(max-width:768px) {
+  .header h1 { font-size:1.5rem; }
+  .tabs { padding:0 .5rem; }
+  .tab { padding:.7rem .7rem; font-size:.72rem; }
+  .content { padding:1rem; }
+  .firm-header { flex-direction:column; text-align:center; }
+  .stats { grid-template-columns:repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Vip's VC Network — Clapham Community</h1>
+  <div class="subtitle">Deep Intelligence Report &nbsp;|&nbsp; Prepared by Victory Square Partners &nbsp;|&nbsp; March 2026</div>
+  <div class="badge">8 Faith-Driven Venture Firms &bull; ~$900M+ Combined AUM</div>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" onclick="showTab(0)">Overview</div>
+  <div class="tab" onclick="showTab(1)">Sovereign's Capital</div>
+  <div class="tab" onclick="showTab(2)">11 Tribes</div>
+  <div class="tab" onclick="showTab(3)">Talanton</div>
+  <div class="tab" onclick="showTab(4)">Jeremiah Fund</div>
+  <div class="tab" onclick="showTab(5)">Fire Road</div>
+  <div class="tab" onclick="showTab(6)">Heron Ventures</div>
+  <div class="tab" onclick="showTab(7)">Kaleo VC</div>
+  <div class="tab" onclick="showTab(8)">1Flourish</div>
+  <div class="tab" onclick="showTab(9)">VSP Team</div>
+  <div class="tab" onclick="showTab(10)">Cross-Network</div>
+</div>
+
+<div class="content">
+
+<!-- ==================== OVERVIEW ==================== -->
+<div class="panel active" id="panel-0">
+
+<div class="stats">
+  <div class="stat"><div class="num">8</div><div class="label">VC Firms</div></div>
+  <div class="stat"><div class="num">~$900M+</div><div class="label">Combined AUM</div></div>
+  <div class="stat"><div class="num">200+</div><div class="label">Portfolio Companies</div></div>
+  <div class="stat"><div class="num">41+</div><div class="label">Exits (Sovereign's alone)</div></div>
+  <div class="stat"><div class="num">6</div><div class="label">Continents Reached</div></div>
+</div>
+
+<div class="card">
+<h3>Network Summary</h3>
+<table>
+<tr><th>Firm</th><th>AUM</th><th>Stage</th><th>Geography</th><th>Key People</th><th>Portfolio</th></tr>
+<tr>
+  <td><strong>Sovereign's Capital</strong></td>
+  <td><span class="tag tag-green">$780M+</span></td>
+  <td>Seed → PE + FoF</td>
+  <td>US + SE Asia</td>
+  <td>Henry Kaestner, Luke Roush</td>
+  <td>84+ cos, 41 exits</td>
+</tr>
+<tr>
+  <td><strong>11 Tribes</strong></td>
+  <td><span class="tag tag-blue">$57M</span></td>
+  <td>Pre-Seed → Series A</td>
+  <td>US Midwest/SE</td>
+  <td>Mark Phillips, Kristina Chapple</td>
+  <td>~30 companies</td>
+</tr>
+<tr>
+  <td><strong>Talanton</strong></td>
+  <td><span class="tag tag-blue">$33M</span></td>
+  <td>Growth (debt-led)</td>
+  <td>East Africa</td>
+  <td>David Simms, Jon Halverson</td>
+  <td>17 companies</td>
+</tr>
+<tr>
+  <td><strong>Jeremiah Fund</strong></td>
+  <td><span class="tag tag-amber">Undisclosed</span></td>
+  <td>Early-stage</td>
+  <td>US Southeast</td>
+  <td>Andrew Clark</td>
+  <td>Undisclosed</td>
+</tr>
+<tr>
+  <td><strong>Fire Road</strong></td>
+  <td><span class="tag tag-amber">$5M</span></td>
+  <td>Pre-Seed</td>
+  <td>US Midwest (Cincinnati)</td>
+  <td>Tim Metzner, Ry Walker</td>
+  <td>~21 companies</td>
+</tr>
+<tr>
+  <td><strong>Heron Ventures</strong></td>
+  <td><span class="tag tag-amber">Undisclosed</span></td>
+  <td>Early/Growth</td>
+  <td>East Africa</td>
+  <td>Jonathan Thiessen</td>
+  <td>Undisclosed</td>
+</tr>
+<tr>
+  <td><strong>Kaleo VC</strong></td>
+  <td><span class="tag tag-amber">Undisclosed</span></td>
+  <td>Pre-Seed / Seed</td>
+  <td>Sub-Saharan Africa</td>
+  <td>Andrew Firman, Henry Kaestner</td>
+  <td>30+ companies</td>
+</tr>
+<tr>
+  <td><strong>1Flourish</strong></td>
+  <td><span class="tag tag-amber">$20M target</span></td>
+  <td>Seed</td>
+  <td>Silicon Valley</td>
+  <td>David Lane, Skip Vaccarello</td>
+  <td>16 companies</td>
+</tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Geographic Distribution</h3>
+<table>
+<tr><th>Region</th><th>Firms</th><th>Notes</th></tr>
+<tr><td><span class="tag tag-blue">US — Silicon Valley</span></td><td>Sovereign's Capital, 1Flourish</td><td>Sovereign's HQ in San Jose; 1Flourish in Mountain View</td></tr>
+<tr><td><span class="tag tag-green">US — Midwest</span></td><td>11 Tribes, Fire Road</td><td>Glen Ellyn IL + Cincinnati OH — "Silicon Heartland"</td></tr>
+<tr><td><span class="tag tag-amber">US — Southeast</span></td><td>Jeremiah Fund, Sovereign's Capital</td><td>Birmingham AL; Sovereign's has Durham NC, Chattanooga TN, Atlanta GA</td></tr>
+<tr><td><span class="tag tag-purple">East Africa</span></td><td>Talanton, Heron Ventures, Kaleo VC</td><td>Kenya, Uganda, Rwanda, Nigeria — 3 firms active</td></tr>
+<tr><td><span class="tag tag-red">Southeast Asia</span></td><td>Sovereign's Capital</td><td>Jakarta office; Indonesia + Singapore investments</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Shared Network Affiliations</h3>
+<table>
+<tr><th>Network</th><th>Member Firms</th></tr>
+<tr><td><strong>Faith Driven Investor</strong></td><td>All 8 firms</td></tr>
+<tr><td><strong>Ambassadors Impact</strong></td><td>Sovereign's Capital, 11 Tribes, Kaleo VC, 1Flourish</td></tr>
+<tr><td><strong>Impact Foundation</strong></td><td>Heron Ventures, 11 Tribes, Kaleo VC, Talanton</td></tr>
+<tr><td><strong>Commonwealth Impact</strong></td><td>11 Tribes</td></tr>
+<tr><td><strong>GIIN</strong></td><td>Talanton</td></tr>
+</table>
+</div>
+</div>
+
+<!-- ==================== SOVEREIGN'S CAPITAL ==================== -->
+<div class="panel" id="panel-1">
+<div class="firm-header">
+  <div class="firm-icon">SC</div>
+  <div class="firm-meta">
+    <h2>Sovereign's Capital</h2>
+    <div class="loc">San Jose, CA &bull; Durham, NC &bull; Chattanooga, TN &bull; Atlanta, GA &bull; Jakarta, Indonesia</div>
+    <div class="url"><a href="https://sovereignscapital.com" target="_blank">sovereignscapital.com</a></div>
+    <div class="firm-tags">
+      <span class="tag tag-green">$780M+ AUM</span>
+      <span class="tag tag-blue">Founded 2012</span>
+      <span class="tag tag-purple">5 Asset Classes</span>
+      <span class="tag tag-amber">84+ Portfolio Cos</span>
+      <span class="tag tag-red">41 Exits</span>
+    </div>
+  </div>
+</div>
+
+<div class="faith-bar"><strong>Faith Positioning:</strong> Flagship faith-driven fund. Co-founded the Faith Driven Investor and Faith Driven Entrepreneur movements globally. "We exist to love God and love our neighbor through investing." Explicitly targets market-rate returns while seeking faith-driven founders/operators. Henry Kaestner is the most prominent voice in Christian venture capital.</div>
+
+<div class="section-title">Leadership Team</div>
+<div class="card">
+<table>
+<tr><th>Name</th><th>Title</th><th>Background</th></tr>
+<tr><td><strong>Henry Kaestner</strong></td><td>Co-Founder & Managing Principal</td><td>Co-founder & ex-CEO of Bandwidth (NASDAQ: BAND) — $0 to $200M ARR. Co-founded Faith Driven Investor/Entrepreneur. BA International Relations, U of Delaware.</td></tr>
+<tr><td><strong>Luke Roush</strong></td><td>Co-Founder & Managing Principal</td><td>Ex-COO Liquidia Technologies (NASDAQ: LQDA). Ex-VP TransEnterix (surgical robotics). Co-founded 410 Medical. BA summa cum laude Duke; MBA Fuqua.</td></tr>
+<tr><td><strong>Andrew Hayden</strong></td><td>Co-Founder</td><td>One of original four co-founders.</td></tr>
+<tr><td><strong>Michael Needley</strong></td><td>Co-Founder</td><td>One of original four co-founders.</td></tr>
+</table>
+<p style="color:var(--muted);font-size:.8rem;margin-top:.5rem;">45 total staff including 7 partners, 10+ principals. Global team of 30+ professionals.</p>
+</div>
+
+<div class="section-title">People Intelligence</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">HK</div><div><div class="person-name">Henry Kaestner</div><div class="person-role">Co-Founder & Managing Principal &bull; Los Gatos, CA &bull; PCA Elder</div></div></div>
+<div class="person-grid">
+<dt>Education</dt><dd>UNC Chapel Hill — no MBA; built via direct entrepreneurship</dd>
+<dt>Pre-SC Career</dt><dd>Founded Chapel Hill Brokers → ICAP Energy (#1 US electricity broker). Co-founded Bandwidth (NASDAQ: BAND) — $0→$600M+ revenue, IPO Nov 2017.</dd>
+<dt>Other Roles</dt><dd>Co-founded Faith Driven Entrepreneur (300+ podcast episodes), Faith Driven Investor, Faith Driven Athlete. Board: Bandwidth, Praxis (founding), CloudFactory, Valley Christian Schools. Author: <em>Faith Driven Entrepreneur</em> (Tyndale, 2021). Advisory: Sinapis (Africa), Cofounders Capital, Archangel Impact Capital.</dd>
+<dt>Church</dt><dd>Venture Christian Church, Los Gatos. Elder, PCA. Co-founded DurhamCares (community nonprofit).</dd>
+<dt>Personal</dt><dd>Wife Kimberley, 3 sons. Value stack: Faith → Family → Work → Fitness. 39+ podcast appearances.</dd>
+<dt>Social</dt><dd>Twitter: <a href="https://x.com/henrykaestner">@henrykaestner</a> (active). LinkedIn: <a href="https://linkedin.com/in/hkaestner">hkaestner</a>.</dd>
+</div>
+<div class="person-quote">"My absolute belief is that you can get great alpha, great investment return, not at the expense of biblical values, but <em>because of them</em>."</div>
+<div class="person-quote">"When David and I look back to the mistakes at Bandwidth...many were just us being willful. We went 0 for 40 in ventures...we'd pray before meetings that we'd walk out with a $20M term sheet, but never prayed whether we should be raising money at all."</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Tyler's existing FDE work is the warmest credential possible — "We've been building inside your house." Reference Kaleo + Africa portcos needing engineering partners. Use his exact language: "because of, not despite." Respects operators who wait on God vs. willful hustle.</div>
+</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">LR</div><div><div class="person-name">Luke Roush</div><div class="person-role">Co-Founder & Managing Partner &bull; Nashville, TN &bull; Duke summa cum laude</div></div></div>
+<div class="person-grid">
+<dt>Education</dt><dd>Duke University (summa cum laude, Hart Leadership Program). MBA, Duke Fuqua School of Business.</dd>
+<dt>Pre-SC Career</dt><dd>COO, Liquidia Technologies (NASDAQ: LQDA). VP Sales/Marketing/BD, TransEnterix (surgical robotics). Co-founded 410 Medical (pediatric trauma devices).</dd>
+<dt>Key Move</dt><dd><strong>Relocated family to Jakarta 2013-2016</strong> to open Sovereign's Indonesia office. Not an armchair investor.</dd>
+<dt>Board Seats</dt><dd>Bandwidth (Audit Chair), Brotherhood Mutual Insurance (serves 60K+ churches), Kingdom Companies Group, Brindlee Fire Services, TROSA (substance recovery), Ten Thousand Villages (fair trade, Vice-Chair 9 years).</dd>
+<dt>Focus</dt><dd>Leads Sovereign's <strong>healthcare and consumer product investments</strong>. 12 years medical device/biotech operating experience.</dd>
+<dt>Personal</dt><dd>Wife Brooke, 3 children. Deep Duke loyalty.</dd>
+</div>
+<div class="person-quote">"It's not a failure of the system, usually. It's usually a failure of nerve."</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Lead with healthcare AI if VSP has any health-tech work. His Brotherhood Mutual board signals deep institutional Christian community ties. He respects bold operators — lead with what VSP has built, not what it believes.</div>
+</div>
+
+<div class="section-title">Investment Thesis</div>
+<div class="card">
+<table>
+<tr><th>Strategy</th><th>Focus</th><th>Check Size / Range</th></tr>
+<tr><td>Venture Capital</td><td>Seed & Series A tech — US + SE Asia</td><td>$300K–$4M</td></tr>
+<tr><td>Private Equity</td><td>Profitable lower middle-market ($10-100M rev)</td><td>Growth equity</td></tr>
+<tr><td>Fund of Funds</td><td>VC/PE managers $25-500M AUM</td><td>Min ~$4M</td></tr>
+<tr><td>Public Equities</td><td>Faith-aligned public companies</td><td>—</td></tr>
+<tr><td>Real Estate</td><td>US value-add w/ faith-driven managers</td><td>—</td></tr>
+</table>
+</div>
+
+<div class="section-title">Fund History</div>
+<div class="card">
+<table>
+<tr><th>Fund</th><th>Vintage</th><th>Size</th><th>Notes</th></tr>
+<tr><td>Venture Fund I</td><td>~2012</td><td>Undisclosed</td><td>First two funds: 35 companies combined</td></tr>
+<tr><td>Venture Fund II</td><td>~2015</td><td>Undisclosed</td><td></td></tr>
+<tr><td>Venture Fund III</td><td>2018</td><td>$20.2M+ (target $50M)</td><td>Partial close per SEC filing</td></tr>
+<tr><td>Venture Fund IV</td><td>2024</td><td><strong>$60M+</strong></td><td>Largest-ever VC fund. 9 investments at close.</td></tr>
+<tr><td>Access Fund (FoF)</td><td>Ongoing</td><td>Undisclosed</td><td>Primaries, secondaries, GP stakes, co-invests</td></tr>
+</table>
+</div>
+
+<div class="section-title">Portfolio Companies (Selected)</div>
+<div class="card">
+<table>
+<tr><th>Company</th><th>Sector</th><th>Status</th><th>Notes</th></tr>
+<tr><td><strong>Bandwidth</strong></td><td>Cloud Communications</td><td><span class="tag tag-green">IPO (NASDAQ: BAND)</span></td><td>Henry Kaestner co-founded; grew $0→$200M ARR</td></tr>
+<tr><td><strong>Liquidia Technologies</strong></td><td>Biopharma</td><td><span class="tag tag-green">IPO (NASDAQ: LQDA)</span></td><td>Luke Roush was COO</td></tr>
+<tr><td><strong>Fakespot</strong></td><td>AI / Consumer Trust</td><td><span class="tag tag-blue">Acquired by Mozilla (2023)</span></td><td>AI fake review detection</td></tr>
+<tr><td><strong>Springbuk</strong></td><td>Health Intelligence</td><td><span class="tag tag-blue">Exited Sep 2025</span></td><td></td></tr>
+<tr><td><strong>Pigeon</strong></td><td>Financial Services</td><td><span class="tag tag-blue">Exited Dec 2025</span></td><td></td></tr>
+<tr><td><strong>Komunal</strong></td><td>Fintech (Indonesia)</td><td>Active</td><td>Digitizing rural banks, financial inclusion</td></tr>
+<tr><td><strong>Preveta</strong></td><td>AI Healthcare</td><td>Active</td><td>AI care navigation for oncology</td></tr>
+<tr><td><strong>Fringe</strong></td><td>HR / Benefits</td><td>Active</td><td>Personalized employee benefits platform</td></tr>
+<tr><td><strong>Relay</strong></td><td>Communications</td><td>Active</td><td>Cloud comms for frontline teams</td></tr>
+<tr><td><strong>Level3 AI</strong></td><td>AI</td><td>Active</td><td>Seed round Feb 2026</td></tr>
+<tr><td><strong>Ciphero AI</strong></td><td>AI / Cybersecurity</td><td>Active</td><td>Recent 2025-2026 investment</td></tr>
+<tr><td><strong>Brindlee Mountain</strong></td><td>Fire Apparatus (PE)</td><td>Active</td><td>Nation's leading fire apparatus refurbisher</td></tr>
+</table>
+</div>
+</div>
+
+<!-- ==================== 11 TRIBES ==================== -->
+<div class="panel" id="panel-2">
+<div class="firm-header">
+  <div class="firm-icon">11T</div>
+  <div class="firm-meta">
+    <h2>11 Tribes Ventures</h2>
+    <div class="loc">Glen Ellyn, IL (Chicago suburb)</div>
+    <div class="url"><a href="https://11tribes.vc" target="_blank">11tribes.vc</a></div>
+    <div class="firm-tags">
+      <span class="tag tag-green">$57M AUM</span>
+      <span class="tag tag-blue">Founded 2020</span>
+      <span class="tag tag-purple">2% Founder Resilience</span>
+      <span class="tag tag-amber">~30 Portfolio Cos</span>
+    </div>
+  </div>
+</div>
+
+<div class="faith-bar"><strong>Faith Positioning:</strong> Explicitly biblical. "Biblical principles lead to the best financial, social, and spiritual outcomes." Name references the tribes of Israel. Invest in founders "of all walks of life" but the firm, LP base, and venture partner community are faith-driven. Member of Ambassadors Impact, Impact Foundation, Commonwealth Impact.</div>
+
+<div class="section-title">Leadership Team</div>
+<div class="card">
+<table>
+<tr><th>Name</th><th>Title</th><th>Background</th></tr>
+<tr><td><strong>Mark Phillips</strong></td><td>Founder & Managing Partner</td><td>UChicago Booth MBA. M&A strategy ($750M+ deals). Founded hardware startup (failed → inspired founder wellbeing thesis). Wheaton College BS Math. EIR at Wheaton Center for Faith & Innovation.</td></tr>
+<tr><td><strong>Kristina Chapple</strong></td><td>General Partner</td><td>Forbes 30 Under 30 in VC (2024). Employee #1. UChicago Polsky Center affiliated. Known for "empathetic diligence."</td></tr>
+<tr><td><strong>Jeff Baxter</strong></td><td>Partner, Head of Platform</td><td>Catalyzes firm relationships and resources for portfolio support.</td></tr>
+<tr><td><strong>Pete Ochs</strong></td><td>Venture Partner</td><td>"Chief Steward" of Enterprise Stewardship. 40-year faith-driven entrepreneur.</td></tr>
+</table>
+<p style="color:var(--muted);font-size:.8rem;margin-top:.5rem;">27 Venture Partners total across non-traditional tech hubs.</p>
+</div>
+
+<div class="section-title">People Intelligence</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">MP</div><div><div class="person-name">Mark Phillips</div><div class="person-role">Founder & Managing Partner &bull; Glen Ellyn, IL &bull; Wheaton EIR</div></div></div>
+<div class="person-grid">
+<dt>Education</dt><dd>BS Math, Wheaton College. MBA, UChicago Booth School of Business.</dd>
+<dt>Career</dt><dd>Accenture M&A → Point B M&A ($750M+ deals led) → P33 Chicago (Director, Ventures) → 11 Tribes. Also co-founded <strong>Diasense</strong> (non-invasive blood glucose monitor) at Booth — ran it 3 years, got leapfrogged, shut it down. This failure is his identity and the entire origin of the 2% founder resilience thesis.</dd>
+<dt>Fundraising</dt><dd><strong>675 Zoom calls</strong> to close Fund I. First commitment didn't come until call ~200. Describes it as the "darkest season of his life."</dd>
+<dt>Other Roles</dt><dd>EIR at Wheaton Center for Faith & Innovation (2021-2023). Adjunct Finance Professor, Wheaton College.</dd>
+<dt>Speaking</dt><dd>The Pitch Show (Season 10), Kingdom Investor, Win At Home First, 1Mby1M AI Investor Forum, Funding Stack. 10+ podcasts.</dd>
+<dt>Social</dt><dd>LinkedIn: markphillips11t. Active on Twitter/X.</dd>
+</div>
+<div class="person-quote">"63% of startup failures are caused by people-related issues, not product/market. So investing in founder resilience is a financial thesis, not just a feel-good program."</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Lead with his Diasense failure story — "I've read about Diasense and how it shaped 11 Tribes." VSP's founder support model mirrors his thesis. Shared Wheaton network could be a bridge. COVID-era launch decision was made with his wife.</div>
+</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">KC</div><div><div class="person-name">Kristina Chapple</div><div class="person-role">General Partner &bull; Forbes 30 Under 30 VC 2024 &bull; ~24 years old</div></div></div>
+<div class="person-grid">
+<dt>Education</dt><dd>UNC Chapel Hill 2022 (Management & Society). <strong>Morehead-Cain Scholar</strong> (elite full-ride merit scholarship). Minors: Entrepreneurship, City & Regional Planning.</dd>
+<dt>Career</dt><dd>Joined 11 Tribes as employee #1 straight out of college. Made GP within ~2 years. Forbes 30 Under 30 VC 2024. Chicago Inno 25 Under 25 (2023). UChicago Polsky Center affiliated.</dd>
+<dt>Role</dt><dd><strong>She IS the front door.</strong> Every founder meets Kristina first. Coined "empathetic diligence" — first meeting probes emotional and relational health before financials. Moderated Gen Z VCs Future of Chicago Summit.</dd>
+<dt>Social</dt><dd>Twitter: <a href="https://x.com/KristinaChapp">@KristinaChapp</a></dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Short LinkedIn note, acknowledge Forbes 30U30, lead with empathetic diligence philosophy. She will pull Mark in. Best first contact for 11 Tribes.</div>
+</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">PO</div><div><div class="person-name">Pete Ochs</div><div class="person-role">Venture Partner &bull; Valley Center, KS &bull; "Chief Steward"</div></div></div>
+<div class="person-grid">
+<dt>Background</dt><dd>40-year faith-driven entrepreneur. Founder of Capital III (impact investing) and Enterprise Stewardship. In 2005, <strong>moved manufacturing inside Hutchinson Correctional Facility</strong> (max-security Kansas prison). Companies Electrex and Seat King employ inmates — 20 years in, recidivism ~8%.</dd>
+<dt>Writing</dt><dd>Author: <em>High Impact LIFE</em>, <em>High Impact Business</em>. Four principles: Honor God, Serve People, Pursue Excellence, Steward Capital.</dd>
+<dt>Speaking</dt><dd>Faith Driven Entrepreneur (Eps 264, 367), The Fort Podcast, iWork4Him.</dd>
+<dt>Personal</dt><dd>Wife Debbie. Valley Center, KS. He is 11 Tribes' credibility signal — his LP network likely got Fund II oversubscribed.</dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Best unlocked through warm intro via FDI/FDE ecosystem. His prison manufacturing story is remarkable — ask about it. Represents the deep end of faith-driven business.</div>
+</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">JB</div><div><div class="person-name">Jeff Baxter</div><div class="person-role">Partner, Head of Platform &bull; Charleston, SC</div></div></div>
+<div class="person-grid">
+<dt>Education</dt><dd>BA Business Economics, Wheaton College (1999-2003).</dd>
+<dt>Career</dt><dd>UBS Wealth Management → Wheaton College Director of Principal Gifts → T2 Capital Management (Head of Investor Relations) → 11 Tribes Head of Platform.</dd>
+<dt>Role</dt><dd>Connects portfolio companies to partners, talent, follow-on capital. <strong>VSP's best entry for a partnership conversation</strong> (not investment pitch).</dd>
+<dt>Personal</dt><dd>Wife Emily, 3 kids. Enjoys tennis, beach. Active in Charleston church.</dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Position VSP as a resource for 11 Tribes portfolio companies needing AI/engineering talent. Partnership conversation, not investment pitch. Charleston is reachable.</div>
+</div>
+
+<div class="section-title">Investment Thesis</div>
+<div class="card">
+<table>
+<tr><th>Dimension</th><th>Detail</th></tr>
+<tr><td>Stage</td><td>Pre-Seed / Seed to Series A</td></tr>
+<tr><td>Check Size</td><td>$1M–$1.5M typical</td></tr>
+<tr><td>Sectors</td><td>B2B SaaS, Healthcare, Cybersecurity, Fintech, AgTech, AI, Consumer/CPG</td></tr>
+<tr><td>Target Exit</td><td>$100M exits (not unicorn swings)</td></tr>
+<tr><td>Differentiator</td><td><strong>2% Founder Resilience Allocation</strong> — non-dilutive funds for founder mental, emotional, spiritual health</td></tr>
+<tr><td>Geography</td><td>Non-traditional hubs: Chicago, Nashville, Atlanta, Midwest/Southeast</td></tr>
+</table>
+</div>
+
+<div class="section-title">Fund History</div>
+<div class="card">
+<table>
+<tr><th>Fund</th><th>Close</th><th>Size</th><th>Notes</th></tr>
+<tr><td>Fund I</td><td>Dec 2021</td><td>~$11M</td><td>~21 portfolio companies. Required 675 Zoom calls to raise.</td></tr>
+<tr><td>Fund II</td><td>Apr 2025</td><td><strong>$46M</strong></td><td>~30 target companies over 36 months. Oversubscribed.</td></tr>
+</table>
+</div>
+
+<div class="section-title">Portfolio Companies (Selected)</div>
+<div class="card">
+<table>
+<tr><th>Company</th><th>Sector</th><th>Notes</th></tr>
+<tr><td><strong>Circadian Risk</strong></td><td>Physical Security SaaS</td><td>$6M Series A. AI-driven vulnerability analysis. Ann Arbor MI.</td></tr>
+<tr><td><strong>Legal Karma</strong></td><td>LegalTech / Fintech</td><td>White-label estate planning for banks/CUs. $4.83M raised.</td></tr>
+<tr><td><strong>GoNanas</strong></td><td>Consumer / CPG</td><td>Allergen-friendly baking mixes. National retail 2023. $1.35M raised.</td></tr>
+<tr><td><strong>Evercycle</strong></td><td>AI / IT Lifecycle</td><td>AI SaaS for IT hardware lifecycle management.</td></tr>
+<tr><td><strong>Lease Up</strong></td><td>PropTech</td><td>Multifamily leasing workflow.</td></tr>
+<tr><td><strong>NuTrād</strong></td><td>Food/Nutrition</td><td>Fund II initial cohort.</td></tr>
+<tr><td><strong>Kidsy</strong></td><td>—</td><td>Fund II initial cohort.</td></tr>
+</table>
+</div>
+</div>
+
+<!-- ==================== TALANTON ==================== -->
+<div class="panel" id="panel-3">
+<div class="firm-header">
+  <div class="firm-icon">T</div>
+  <div class="firm-meta">
+    <h2>Talanton Impact Fund</h2>
+    <div class="loc">Newtown Square, PA</div>
+    <div class="url"><a href="https://talantonimpact.com" target="_blank">talantonimpact.com</a></div>
+    <div class="firm-tags">
+      <span class="tag tag-green">$33M+ AUM</span>
+      <span class="tag tag-blue">Founded ~2018</span>
+      <span class="tag tag-purple">Debt-Led Impact</span>
+      <span class="tag tag-amber">109K+ Jobs Created</span>
+    </div>
+  </div>
+</div>
+
+<div class="faith-bar"><strong>Faith Positioning:</strong> Core identity. Name from the Parable of the Talents (Matthew 25). "High level of spiritual integration" is a formal fund feature alongside the 8% target return. Evaluates spiritual growth of portfolio company leadership as a diligence criterion. Member of Faith Driven Investor, GIIN, Impact Foundation, Ambassadors Impact.</div>
+
+<div class="section-title">Leadership Team</div>
+<div class="card">
+<table>
+<tr><th>Name</th><th>Title</th><th>Background</th></tr>
+<tr><td><strong>David Simms</strong></td><td>Managing Partner & Founder</td><td>Penn/Wharton (summa cum laude, Phi Beta Kappa). Harvard JD/MBA with distinction. White House Fellow. Ex-CEO Red Cross Washington/Baltimore. Ex-SEVP MBNA. Ex-President Opportunity US. Chairman Opportunity Global (10M clients).</td></tr>
+<tr><td><strong>Harry Turner</strong></td><td>Partner</td><td>Serves on portfolio company boards (e.g., Educor).</td></tr>
+<tr><td><strong>Jon Halverson</strong></td><td>Partner</td><td>25 years at Cargill and Land O'Lakes across 3 continents. Wheaton College BA. Regis University MBA (International Business).</td></tr>
+<tr><td><strong>Iris Wen</strong></td><td>Associate Partner</td><td>15 years financial services / Africa biz dev. Ex-UBS, ex-BofA Merrill Lynch. Ex-ED Videre (70+ rural businesses incubated).</td></tr>
+</table>
+</div>
+
+<div class="section-title">People Intelligence</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">DS</div><div><div class="person-name">David Simms</div><div class="person-role">Managing Partner & Founder &bull; Newtown Square, PA &bull; White House Fellow</div></div></div>
+<div class="person-grid">
+<dt>Education</dt><dd>Penn/Wharton (summa cum laude, Phi Beta Kappa). Harvard JD/MBA with distinction.</dd>
+<dt>Career</dt><dd><strong>White House Fellow under Reagan/Bush</strong> — Special Assistant to Deputy Secretary of State. CEO, Red Cross Washington/Baltimore Region. SEVP, MBNA. President, Opportunity US / Chairman, Opportunity Global (<strong>grew from &lt;1K to 12M+ clients</strong> over 30 years). Founding Chair, MicroEnsure. MD, Impact Foundation.</dd>
+<dt>Faith</dt><dd>Faith journey began at Harvard Law School — shares this publicly. Small group leader at local Newtown Square PA church. Married to Kim (35+ years).</dd>
+<dt>Speaking</dt><dd>Kingdom Investor Podcast Ep 41. Wharton Dollars & Change interview.</dd>
+<dt>Unique</dt><dd>Talanton's DAF model means investor capital is <strong>tax-deductible while generating ~8% returns</strong>.</dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Reference Kingdom Investor Podcast Ep 41 or Wharton interview. His Opportunity International career (30 years, 12M clients) demonstrates long-game commitment — position VSP similarly. The tax-deductible DAF structure is a distinctive talking point.</div>
+</div>
+
+<div class="section-title">Investment Thesis</div>
+<div class="card">
+<table>
+<tr><th>Dimension</th><th>Detail</th></tr>
+<tr><td>Mission</td><td>End global poverty through job creation</td></tr>
+<tr><td>Target</td><td>"Missing Middle" — $500K–$5M revenue companies</td></tr>
+<tr><td>Instrument</td><td>Primarily debt-led (senior position) + selective equity</td></tr>
+<tr><td>Check Size</td><td>$300K–$500K initial; $1–2M avg total</td></tr>
+<tr><td>Target Return</td><td>8% net of fees</td></tr>
+<tr><td>Structure</td><td>Evergreen fund + conventional PE vehicle</td></tr>
+<tr><td>Geography</td><td>East Africa (Kenya, Uganda, Rwanda, Burundi)</td></tr>
+</table>
+</div>
+
+<div class="section-title">Portfolio Companies</div>
+<div class="card">
+<table>
+<tr><th>Company</th><th>Country</th><th>Sector</th><th>Status</th><th>Notes</th></tr>
+<tr><td><strong>Enda</strong></td><td>Kenya</td><td>Consumer / Apparel</td><td><span class="tag tag-blue">Exited Jan 2024</span></td><td>Africa's first made-in-Kenya running shoe. First black-led running shoe brand globally.</td></tr>
+<tr><td><strong>Kentegra Biotechnology</strong></td><td>Kenya</td><td>AgBiotech</td><td>Active</td><td>Organic pyrethrum extract. 322 FT staff, 31K+ contracted farmers.</td></tr>
+<tr><td><strong>BURN Manufacturing</strong></td><td>Sub-Saharan Africa</td><td>CleanTech</td><td>Active</td><td>World's largest cookstove manufacturer. 1000+ employees, 50%+ women.</td></tr>
+<tr><td><strong>Masaka Creamery</strong></td><td>Rwanda</td><td>Dairy</td><td>Active</td><td>41 FT workers (50% Deaf); 2000+ farmer sources.</td></tr>
+<tr><td><strong>BioFarms</strong></td><td>Kenya</td><td>AgExport</td><td>Active</td><td>Organic avocados. 5000+ partner farmers; 5925 jobs.</td></tr>
+<tr><td><strong>Educor</strong></td><td>Kenya</td><td>Education</td><td>Active</td><td>Christ-centered ECE. 5 schools, 250+ students.</td></tr>
+<tr><td><strong>Pezesha</strong></td><td>Kenya</td><td>Fintech</td><td>Active</td><td>SME lending marketplace. $11M pre-Series A.</td></tr>
+<tr><td><strong>MoKo Home</strong></td><td>Kenya</td><td>Manufacturing</td><td>Active</td><td>Mattress/home furnishing. 230 employees. $6.5M Series B.</td></tr>
+<tr><td><strong>PRI</strong></td><td>East Africa</td><td>Mining</td><td>Active</td><td>Tantalum mining and refinery.</td></tr>
+</table>
+</div>
+</div>
+
+<!-- ==================== JEREMIAH FUND ==================== -->
+<div class="panel" id="panel-4">
+<div class="firm-header">
+  <div class="firm-icon">JF</div>
+  <div class="firm-meta">
+    <h2>Jeremiah Fund</h2>
+    <div class="loc">Birmingham, AL</div>
+    <div class="url"><a href="https://jeremiahfund.com" target="_blank">jeremiahfund.com</a></div>
+    <div class="firm-tags">
+      <span class="tag tag-amber">Undisclosed AUM</span>
+      <span class="tag tag-blue">Founded 2022</span>
+      <span class="tag tag-purple">Kingdom VC</span>
+      <span class="tag tag-green">Lion's Den Heritage</span>
+    </div>
+  </div>
+</div>
+
+<div class="faith-bar"><strong>Faith Positioning:</strong> Primary identity. Name from Jeremiah 29:11 — "Hope in a Future." Philosophy anchored in Wendell Berry's <em>"Practice Resurrection"</em>. Kingdom-oriented VC pairing capital with discipleship. Frames investor-founder relationship as spiritual mentorship alongside business building. Deeply embedded in FDI/FDE ecosystem. Ran The Lion's Den US for 8 years — faith-driven Shark Tank channeling $10M+ to Christ-centered founders. 13th annual Lion's Den scheduled Oct 14-16, 2026 at The Harbert Center, Birmingham.</div>
+
+<div class="section-title">Leadership Team</div>
+<div class="card">
+<table>
+<tr><th>Name</th><th>Title</th><th>Background</th></tr>
+<tr><td><strong>Andrew Clark</strong></td><td>Founder & Managing Partner</td><td>Samford University (Classics &amp; Philosophy). CEO NOBLE Brands (2010-13). Director everAthletic (2013-14). MD at Wherewithal advisory (2010-present). Founded The Lion's Den US (2014-2022) — faith-driven Shark Tank, $10M+ invested. Co-founder Cedarworks Inc (501c organizing Lion's Den). Advisor to Samford Dean of Arts &amp; Sciences.</td></tr>
+</table>
+<p style="color:var(--muted);font-size:.8rem;margin-top:.5rem;">Solo GP or very small team. No other partners publicly identified.</p>
+</div>
+
+<div class="section-title">Investment Thesis</div>
+<div class="card">
+<table>
+<tr><th>Dimension</th><th>Detail</th></tr>
+<tr><td>Stage</td><td>Early-stage venture</td></tr>
+<tr><td>Philosophy</td><td>"Venturing differently" — capital + discipleship + Kingdom partnership</td></tr>
+<tr><td>Geography</td><td>Regional/underserved markets (Southeast US, away from coastal hubs)</td></tr>
+<tr><td>Target Founders</td><td>Christ-centered, values-aligned</td></tr>
+<tr><td>Fund Vehicle</td><td>Jeremiah Fund I, LP (SEC Form D filed July 2024). GP: Jeremiah Capital GP, LLC</td></tr>
+<tr><td>Check Size</td><td>Not publicly disclosed</td></tr>
+</table>
+</div>
+
+<div class="section-title">Notable Background: The Lion's Den</div>
+<div class="card">
+<p style="font-size:.85rem;line-height:1.7;">Andrew Clark founded and ran <strong>The Lion's Den US</strong> from 2014 to 2022 — a faith-driven Shark Tank-style pitch forum connecting Christ-centered founders with values-aligned investors. Over 8 years, the platform channeled <strong>$10M+ in investment</strong> to presenting entrepreneurs. The Lion's Den had chapters across multiple US cities including DFW. This network is the likely primary deal flow source for the Jeremiah Fund.</p>
+</div>
+
+<div class="section-title">Portfolio Companies</div>
+<div class="card">
+<p style="font-size:.85rem;line-height:1.7;">Portfolio companies are not publicly disclosed — intentional stealth posture. Deal flow comes from The Lion's Den alumni network (13th annual event: Oct 14-16, 2026, Harbert Center, Birmingham). Possible connection: <strong>Amy Brandenburg / DA Ventures</strong> appeared alongside Clark in Denver Institute podcast — potential co-investor. Lion's Den alumni include <strong>Kingstone Studios</strong> (animation, signed major dev deal post-pitch 2023) and <strong>Amplio Recruiting</strong> (faith-driven staffing, expanded 3→20 US locations). The "I Can Only Imagine" film ($86M gross) received ~20% of its $8M budget from Lion's Den participants.</p>
+</div>
+</div>
+
+<!-- ==================== FIRE ROAD ==================== -->
+<div class="panel" id="panel-5">
+<div class="firm-header">
+  <div class="firm-icon">FR</div>
+  <div class="firm-meta">
+    <h2>Fire Road</h2>
+    <div class="loc">Cincinnati, OH (1819 Innovation Hub, University of Cincinnati)</div>
+    <div class="url"><a href="https://fireroad.io" target="_blank">fireroad.io</a></div>
+    <div class="firm-tags">
+      <span class="tag tag-green">$5M Fund I</span>
+      <span class="tag tag-blue">Founded 2023</span>
+      <span class="tag tag-purple">Founder Flourishing</span>
+      <span class="tag tag-amber">$1.5B+ Team Track Record</span>
+    </div>
+  </div>
+</div>
+
+<div class="faith-bar"><strong>Faith Positioning:</strong> Faith-informed, not faith-exclusive. Tim Metzner featured on Faith-Driven Leader podcast. Co-evolved from Ocean Accelerator (explicitly Christian accelerator in Cincinnati). Values-aligned and mission-driven without requiring faith as a prerequisite. "Founder flourishing" — a portion of management fees goes to founder wellbeing resources.</div>
+
+<div class="section-title">Leadership Team</div>
+<div class="card">
+<table>
+<tr><th>Name</th><th>Title</th><th>Background</th></tr>
+<tr><td><strong>Tim Metzner</strong></td><td>Founder & CEO</td><td>Co-founded Differential (2013, dev shop + venture studio, 10+ companies launched). Co-founded Ocean Accelerator (faith-centered). Co-founded Coterie Insurance ($115M+ raised). 56+ personal angel deals. $470M+ raised, $1.5B+ enterprise value created across ventures.</td></tr>
+<tr><td><strong>Ry Walker</strong></td><td>Co-Founder / Partner</td><td>Co-founded Astronomer (2015) — data orchestration platform, $280M+ raised, <strong>$1B+ valuation (unicorn)</strong>. Exited to launch Tembo/CoreDB (Fireroad portfolio co). Serial engineer, open source champion.</td></tr>
+<tr><td><strong>Christy Johnson</strong></td><td>Partner / Fund Manager</td><td>Former COO of Ocean Accelerator. Enterprise marketer, strategist, operator.</td></tr>
+</table>
+</div>
+
+<div class="section-title">People Intelligence</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">TM</div><div><div class="person-name">Tim Metzner</div><div class="person-role">Founder & CEO &bull; Cincinnati, OH &bull; Crossroads Church</div></div></div>
+<div class="person-grid">
+<dt>Career</dt><dd>Co-founded Differential (2013, dev shop + venture studio). Co-founded Ocean Accelerator (faith-centered). Co-founded Coterie Insurance ($115M+ raised). 56+ angel deals personally. <strong>$470M+ raised, $1.5B+ enterprise value</strong> across ventures.</dd>
+<dt>Church</dt><dd>Member of Crossroads Church (17,000 attendees). Co-founded Unpolished speaker series there.</dd>
+<dt>Speaking</dt><dd>Faith-Driven Leader podcast (Aug 2024, 52 min). Multiple startup ecosystem events.</dd>
+<dt>Personal</dt><dd>Dad of 4. Buckeye football fan. Loves ice cream and travel. Blog: dailymo.co (daily inspiration).</dd>
+<dt>Social</dt><dd>Active on LinkedIn and Twitter. Cincinnati's most connected faith-entrepreneur ecosystem builder.</dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Fire Road's thesis (SMB + founder resilience + mgmt fee allocation) mirrors VSP's worldview. He's the gatekeeper to Cincinnati's faith-entrepreneur ecosystem. Ask: "How do founder wellness allocations land with LPs — feature or bug?"</div>
+</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">RW</div><div><div class="person-name">Ry Walker</div><div class="person-role">Co-Founder &bull; CEO, Tembo &bull; Unicorn Exit</div></div></div>
+<div class="person-grid">
+<dt>Career</dt><dd>Founded SharkBytes in 1990s (sold to rollup 1999). Co-founded Astronomer (2015) — data orchestration on Apache Airflow, <strong>$280M+ raised, $1.1B+ valuation (unicorn)</strong>. Exited to launch Tembo/CoreDB ($20M raised). Serial engineer, open-source champion.</dd>
+<dt>Technical</dt><dd>Active on GitHub (@ryw). Tembo = commercial Postgres platform with 194+ extensions for vector search, ML, data warehousing.</dd>
+<dt>Social</dt><dd>Twitter: <a href="https://x.com/rywalker">@rywalker</a>. UC dropout turned unicorn CEO.</dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Less faith-forward publicly — lead with technical/business angle. Tembo is at intersection of database infra + AI. VSP clients building data-heavy products should know about Tembo. His "commercial platform on open-source" thesis is a conversation starter.</div>
+</div>
+
+<div class="section-title">Investment Thesis</div>
+<div class="card">
+<table>
+<tr><th>Dimension</th><th>Detail</th></tr>
+<tr><td>Stage</td><td>Inception / Pre-Seed ("day one" partners)</td></tr>
+<tr><td>Check Size</td><td>$100K–$250K</td></tr>
+<tr><td>Sectors</td><td>Applied AI, SMB-focused software, legacy industry disruption (healthcare, legal, real estate, construction, hospitality, HR, marketing)</td></tr>
+<tr><td>Structure</td><td>3-part: Fireroad Foundry (ideation) + HoldCo (acquisitions) + Ventures (fund)</td></tr>
+<tr><td>Target</td><td>~35 inception-stage companies</td></tr>
+<tr><td>Geography</td><td>Cincinnati / Midwest — "Silicon Heartland"</td></tr>
+</table>
+</div>
+
+<div class="section-title">Fund History</div>
+<div class="card">
+<table>
+<tr><th>Fund</th><th>Close</th><th>Size</th><th>Notes</th></tr>
+<tr><td>Fund I</td><td>2024</td><td>$5M (target was $20M)</td><td>~21 investments made. 10-year horizon.</td></tr>
+</table>
+</div>
+
+<div class="section-title">Portfolio Companies</div>
+<div class="card">
+<table>
+<tr><th>Company</th><th>Sector</th><th>Notes</th></tr>
+<tr><td><strong>Tembo (CoreDB)</strong></td><td>AI / Data Infrastructure</td><td>Managed Postgres cloud, 194+ extensions. CEO is Ry Walker (Fireroad co-founder).</td></tr>
+<tr><td><strong>Narratize</strong></td><td>GenAI / R&D</td><td>GenAI co-author for innovators. Investment #10.</td></tr>
+<tr><td><strong>SMB.co</strong></td><td>SMB Platform</td><td>Small business transitions/M&A. $1M pre-seed (co-led w/ Collide Capital).</td></tr>
+<tr><td><strong>Flamel.ai</strong></td><td>AI Marketing</td><td>AI marketing for multi-location brands. Dec 2024.</td></tr>
+<tr><td><strong>Band Connect</strong></td><td>Digital Health</td><td>Remote physical therapy. 200%+ patient compliance vs national benchmarks.</td></tr>
+<tr><td><strong>GlassHouse</strong></td><td>Sales / Home Services</td><td>Outbound sales for home service businesses. Nashville-based. Neighborhood-level intelligence.</td></tr>
+<tr><td><strong>DifferentKind</strong></td><td>Dental / HealthTech</td><td>Dental patient experience & outcomes data. Investment #15. Buena Vista, CO.</td></tr>
+<tr><td><strong>Sense Neuro</strong></td><td>Neurodiagnostics</td><td>First cohort investment. UC-affiliated.</td></tr>
+<tr><td><strong>Immersed</strong></td><td>XR / Productivity</td><td>Virtual workspace / business productivity.</td></tr>
+<tr><td><strong>Methodic</strong></td><td>HRTech</td><td>Human capital services. Most recent (Apr 2025).</td></tr>
+<tr><td><strong>Toolsey</strong></td><td>Productivity</td><td>Business/productivity software.</td></tr>
+<tr><td><strong>Magic Kids</strong></td><td>EdTech</td><td>Educational software.</td></tr>
+</table>
+</div>
+</div>
+
+<!-- ==================== HERON VENTURES ==================== -->
+<div class="panel" id="panel-6">
+<div class="firm-header">
+  <div class="firm-icon">HV</div>
+  <div class="firm-meta">
+    <h2>Heron Ventures</h2>
+    <div class="loc">Chicago, IL &bull; Nairobi, Kenya</div>
+    <div class="url"><a href="https://heronventures.com" target="_blank">heronventures.com</a></div>
+    <div class="firm-tags">
+      <span class="tag tag-amber">Undisclosed AUM</span>
+      <span class="tag tag-blue">Founded 2018</span>
+      <span class="tag tag-purple">Frontier Markets</span>
+      <span class="tag tag-green">VC + Credit Blend</span>
+    </div>
+  </div>
+</div>
+
+<div class="faith-bar"><strong>Faith Positioning:</strong> Core, not incidental. Listed on Faith Driven Investor and Impact Foundation. Language is explicitly values-laden: "mercy, truth, and flourishing to nations," "redemptive action," "elevate the least." The "Mutual Submission" framing reflects deliberate theology of power and economics. Jonathan Thiessen's prior work with Scatter Global (cross-cultural Christian mission) is the direct precursor — faith-missions translated into capital markets.</div>
+
+<div class="section-title">Leadership Team</div>
+<div class="card">
+<table>
+<tr><th>Name</th><th>Title</th><th>Background</th></tr>
+<tr><td><strong>Jonathan Thiessen</strong></td><td>General Partner</td><td>Based in Tyrone, GA (Atlanta metro). 14 years in former Soviet Union. SVP at Operation Mobilization USA. Co-founded Scatter Global (under OM — mobilized marketplace professionals into cross-cultural mission). Connected to Adilstone Group (global faith-based talent acquisition; Jeremy Thiessen — likely family — is Head of Office, Vietnam). Open University BSc Sociology &amp; Anthropology. Visited 75 countries.</td></tr>
+</table>
+<p style="color:var(--muted);font-size:.8rem;margin-top:.5rem;">Leanly staffed — consistent with small emerging-markets GP.</p>
+</div>
+
+<div class="section-title">Investment Thesis</div>
+<div class="card">
+<p style="font-size:.85rem;line-height:1.7;margin-bottom:1rem;">"A private investment fund management company that expands the transformational influence of locally-led entrepreneur communities in frontier and emerging markets."</p>
+<table>
+<tr><th>Pillar</th><th>Description</th></tr>
+<tr><td><strong>Local Vision</strong></td><td>Coming alongside local leaders with a vision for entrepreneurship's role in shaping countries</td></tr>
+<tr><td><strong>Mutual Submission</strong></td><td>Repairing power differentials between investors and entrepreneurs</td></tr>
+<tr><td><strong>Paradigm Shifts</strong></td><td>Structuring investments that reframe risk, reward, and horizon in frontier markets</td></tr>
+<tr><td><strong>Generational Capital Markets Innovation</strong></td><td>Creative debt + custom equity strategies</td></tr>
+</table>
+</div>
+
+<div class="section-title">Fund Structure</div>
+<div class="card">
+<table>
+<tr><th>Fund</th><th>Type</th><th>Location</th><th>Domicile</th></tr>
+<tr><td>East Africa Growth Fund</td><td>Venture Capital</td><td>Nairobi, Kenya</td><td>Delaware, USA</td></tr>
+<tr><td>East Africa Credit Opportunities Fund</td><td>Debt / Credit</td><td>Chicago, IL</td><td>Delaware, USA</td></tr>
+</table>
+</div>
+
+<div class="section-title">Portfolio Companies</div>
+<div class="card">
+<p style="font-size:.85rem;line-height:1.7;">No specific portfolio companies publicly disclosed — intentional quiet posture typical of frontier market impact funds (protects portfolio cos from unwanted attention). The dual-fund structure (equity + credit) suggests a blended capital approach. Jonathan Thiessen runs a Substack called <strong>"Treading Space"</strong> (philosophical/spiritual writing). Entry point: Impact Foundation has listed Heron as a recommended fund for their Christian donor community. Scatter Global / Operation Mobilization network is the likely deal sourcing channel for East African Christian entrepreneurs.</p>
+</div>
+</div>
+
+<!-- ==================== KALEO VC ==================== -->
+<div class="panel" id="panel-7">
+<div class="firm-header">
+  <div class="firm-icon">K</div>
+  <div class="firm-meta">
+    <h2>Kaleo VC</h2>
+    <div class="loc">Dallas, TX</div>
+    <div class="url"><a href="https://kaleo.vc" target="_blank">kaleo.vc</a></div>
+    <div class="firm-tags">
+      <span class="tag tag-amber">Undisclosed AUM (Micro-VC)</span>
+      <span class="tag tag-blue">Founded 2022</span>
+      <span class="tag tag-purple">Africa Tech</span>
+      <span class="tag tag-green">30+ Portfolio Cos</span>
+    </div>
+  </div>
+</div>
+
+<div class="faith-bar"><strong>Faith Positioning:</strong> Explicit and central. "Funding the next generation of early-stage, faith-driven tech founders." Impact Foundation member. Henry Kaestner (co-founder) is the most prominent faith-driven investor globally. Andrew Firman contributes to TGC Africa and Radical Network — deep Reformed evangelical roots. Name "Kaleo" = Greek for "to call" — theological reference to vocation.</div>
+
+<div class="section-title">Leadership Team</div>
+<div class="card">
+<table>
+<tr><th>Name</th><th>Title</th><th>Background</th></tr>
+<tr><td><strong>Andrew Firman</strong></td><td>Co-Founder & Managing Partner</td><td>CFA. Ex-Principal at Sovereign's Capital (30+ deals in Africa). Ex-Director at Faith Driven Investor. Ex-JP Morgan VP. 50+ personal investments in faith-driven entrepreneurs across Sub-Saharan Africa.</td></tr>
+<tr><td><strong>Henry Kaestner</strong></td><td>Co-Founder & Partner</td><td>Same as Sovereign's Capital — co-founder of Bandwidth (NASDAQ: BAND), Faith Driven Investor/Entrepreneur movements.</td></tr>
+<tr><td><strong>Iretimipo Kukoyi</strong></td><td>Partner</td><td>Food Technology MSc. Expertise in research, entrepreneurship, market-entry advising in Africa.</td></tr>
+<tr><td><strong>Ife Oyedele</strong></td><td>Partner</td><td>Limited public details.</td></tr>
+<tr><td><strong>Jonathan Liao</strong></td><td>Venture Partner</td><td>One of 4 Venture Partners.</td></tr>
+</table>
+</div>
+
+<div class="section-title">People Intelligence</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">AF</div><div><div class="person-name">Andrew Firman, CFA</div><div class="person-role">Co-Founder & Managing Partner &bull; Dallas, TX</div></div></div>
+<div class="person-grid">
+<dt>Education</dt><dd>CFA Charterholder. Previously lived in Dubai.</dd>
+<dt>Career</dt><dd>Investment Specialist, Global Investment Bank Limited → VP, JP Morgan (ran family office in Dubai) → Heirloom Investment Mgmt → Co-founded Melior Capital → <strong>Principal at Sovereign's Capital (30+ Africa deals)</strong> → Director, Faith Driven Investor "Marketplace" (connecting UHNW family offices to faith funds) → Co-founded Kaleo Ventures.</dd>
+<dt>Writing</dt><dd>TGC Africa: <em>"Do You Need to Get a Christian Job?"</em> and <em>"Assuming It's Legal, Your Work Is a Calling."</em> Radical.net (David Platt): <em>"How Our Vocation is Part of the Great Commission."</em></dd>
+<dt>Speaking</dt><dd>FDI Podcast Ep 48 ("What is Marketplace?"), Ep 175 ("Risk, Return, and Rewards for Investing in Africa"). Speaks at churches in Lagos, Nigeria.</dd>
+<dt>Personal</dt><dd>Wife Anne, 2 daughters. Reformed/missional theological alignment (TGC, Radical).</dd>
+</div>
+<div class="person-quote">"Work is intrinsically sacred. We serve a God who is exercising care and love over his creation."</div>
+<div class="person-quote">"If you were to poll believers on 'Christian' jobs, the list is short: pastor, missionary, doctor. But none of these will exist in the New Heavens and the New Earth, as they all depend on the existence of sin."</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Reference his TGC article on sacred work — it resonates directly with VSP's mission. Africa portcos need engineering partners. Phil Jung → Henry → Andrew is the natural warm chain. His FDI Marketplace director experience means he knows how to broker — VSP can be on his "who do my portcos call?" map.</div>
+</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">IK</div><div><div class="person-name">Iretimipo Kukoyi</div><div class="person-role">Partner &bull; Lagos, Nigeria &bull; Serial Founder → Investor</div></div></div>
+<div class="person-grid">
+<dt>Education</dt><dd>MSc Science of Animal Derived Foods, Universitat Autònoma de Barcelona. Obuntu Foundation Launchpad Fellow (inaugural class — invite-only for first-time African VC fund managers).</dd>
+<dt>Career</dt><dd>Research Scientist, Arla Foods (Denmark) → Founded Gingerbox (Nigerian food startup, bootstrapped) → Founded Mealimeter (food tech, bootstrapped) → Co-founded Sycamore Africa (education nonprofit) → EIR + Head of Venture Building at Future Africa (Iyin Aboyeji's pan-African VC) → Co-founded Alpha Gaps (early VC) → Partner, Kaleo Ventures.</dd>
+<dt>Speaking</dt><dd>The Kingdom Summit, 3i Africa Summit.</dd>
+<dt>Personal</dt><dd>Nigerian. Barcelona → Copenhagen → Lagos journey. Nearly a decade advising startups in first 3-5 years.</dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Founder-to-founder frame — she built from zero with no institutional backing. "You know what it's like to build with limited resources. Your portfolio founders need an engineering partner who builds alongside them." Kingdom Summit attendance puts VSP in the same room.</div>
+</div>
+
+<div class="section-title">Investment Thesis</div>
+<div class="card">
+<table>
+<tr><th>Dimension</th><th>Detail</th></tr>
+<tr><td>Stage</td><td>Pre-Seed and Seed (60%+ deals at pre-revenue)</td></tr>
+<tr><td>Geography</td><td>Sub-Saharan Africa — Nigeria (#1), Kenya (#2)</td></tr>
+<tr><td>Sectors</td><td>Enterprise SaaS, Consumer Tech, EdTech, CleanTech, HealthTech, AgTech</td></tr>
+<tr><td>Target</td><td>50+ faith-aligned entrepreneurs per year</td></tr>
+<tr><td>Speed</td><td>"Wire first check within 3 weeks"</td></tr>
+<tr><td>SEC Registration</td><td>CRD #335165</td></tr>
+</table>
+</div>
+
+<div class="section-title">Portfolio Companies (Selected)</div>
+<div class="card">
+<table>
+<tr><th>Company</th><th>Country</th><th>Sector</th><th>Notes</th></tr>
+<tr><td><strong>Chowdeck</strong></td><td>Nigeria</td><td>Food Delivery</td><td>1.5M+ customers, 20K+ riders, 11 cities. <strong>$9M Series A</strong> (Novastar, YC). Profitable. Expanding to Ghana.</td></tr>
+<tr><td><strong>Billboxx</strong></td><td>Nigeria</td><td>Fintech</td><td>SME cash flow / invoicing. $1.6M pre-seed.</td></tr>
+<tr><td><strong>Releaf</strong></td><td>Nigeria</td><td>AgTech</td><td>Top portfolio company per Tracxn.</td></tr>
+<tr><td><strong>Beacon Power</strong></td><td>Nigeria</td><td>Energy Tech</td><td>Building energy management. <strong>$29.8M round</strong> (Nov 2024).</td></tr>
+<tr><td><strong>Zydii</strong></td><td>Kenya</td><td>EdTech</td><td>African online learning platform.</td></tr>
+<tr><td><strong>Lingawa</strong></td><td>Africa</td><td>EdTech</td><td>Language learning.</td></tr>
+<tr><td><strong>Cr3dentials</strong></td><td>Africa</td><td>Fintech / Identity</td><td>Decentralized income verification. $25K from Kaleo.</td></tr>
+<tr><td><strong>PBR Life Sciences</strong></td><td>Africa</td><td>HealthTech</td><td>Data infrastructure for pharma companies.</td></tr>
+<tr><td><strong>Terra</strong></td><td>Africa</td><td>—</td><td>Series A — most recent investment (Jan 2026).</td></tr>
+<tr><td><strong>PowerLabs</strong></td><td>Africa</td><td>Industrial</td><td>Equipment/industrial. Sep 2025.</td></tr>
+</table>
+</div>
+</div>
+
+<!-- ==================== 1FLOURISH ==================== -->
+<div class="panel" id="panel-8">
+<div class="firm-header">
+  <div class="firm-icon">1F</div>
+  <div class="firm-meta">
+    <h2>1Flourish Capital</h2>
+    <div class="loc">Mountain View, CA</div>
+    <div class="url"><a href="https://1flourish.com" target="_blank">1flourish.com</a></div>
+    <div class="firm-tags">
+      <span class="tag tag-amber">$20M Target (Fund I)</span>
+      <span class="tag tag-blue">Founded 2017</span>
+      <span class="tag tag-purple">$1B+ Partner Track Record</span>
+      <span class="tag tag-green">16 Portfolio Cos</span>
+    </div>
+  </div>
+</div>
+
+<div class="faith-bar"><strong>Faith Positioning:</strong> Core differentiator. Faith Driven Investor and Ambassadors Impact member. Biblical principles as operating standards — founders must commit to love, transparency, forgiveness, humility, integrity. Patrick Lencioni (author of "5 Dysfunctions of a Team") serves as advisor. David Lane is a church deacon and planter. Skip Vaccarello authored "Finding God in Silicon Valley." Pursues "financial, social, and spiritual returns."</div>
+
+<div class="section-title">Leadership Team</div>
+<div class="card">
+<table>
+<tr><th>Name</th><th>Title</th><th>Background</th></tr>
+<tr><td><strong>David Lane</strong></td><td>Co-Founder & Partner</td><td>USC BSEE + Harvard MBA. Sr VC Investment Officer, Harvard Management Company (~$8B endowment). MD, ONSET Ventures (~$1B AUM). Co-founded Diamondhead Ventures ($140M fund — exits to Microsoft, Apple, McAfee, Marvell). Church deacon.</td></tr>
+<tr><td><strong>Skip Vaccarello</strong></td><td>Co-Founder & GP</td><td>Harvard BA + Boston U MBA. 40+ years Silicon Valley: VP Ops VisiCorp (VisiCalc), Division GM 3Com, CEO multiple companies. Author "Finding God in Silicon Valley."</td></tr>
+<tr><td><strong>Andrew Miller</strong></td><td>Founder & Managing Partner</td><td>Fortune 50 exec: EVP GE Capital, President TRW. 3x CEO. Took Bankrate.com public. Check: $50K–$1M.</td></tr>
+<tr><td><strong>Tom Tognoli</strong></td><td>Partner</td><td>Co-founded Intero Real Estate → <strong>acquired by Berkshire Hathaway (2014)</strong>. $12B+ annual sales volume. Largest real estate firm in Silicon Valley at sale.</td></tr>
+</table>
+<p style="color:var(--muted);font-size:.8rem;margin-top:.5rem;">Advisor: <strong>Patrick Lencioni</strong> — Founder, The Table Group; author of "The 5 Dysfunctions of a Team." His frameworks are used with portfolio founders.</p>
+</div>
+
+<div class="section-title">People Intelligence</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">SV</div><div><div class="person-name">Skip Vaccarello</div><div class="person-role">Co-Founder & GP &bull; Mountain View, CA &bull; Author</div></div></div>
+<div class="person-grid">
+<dt>Education</dt><dd>Harvard BA. Boston University MBA (with honors).</dd>
+<dt>Career</dt><dd>40+ years Silicon Valley: VP Ops VisiCorp (VisiCalc — industry's first spreadsheet). Division GM 3Com. CEO Communications Solutions. CEO Applied Weather Technology. Co-founder/CEO The Saratoga Group.</dd>
+<dt>Writing</dt><dd>Author: <em>Finding God in Silicon Valley</em> (foreword by <strong>Pat Gelsinger</strong>, then VMware CEO, later Intel CEO). Runs findinggodinsiliconvalley.com blog. Active platform for faith-tech intersection.</dd>
+<dt>Community</dt><dd>Led <strong>Connect Silicon Valley</strong> for 16 years (now Chairman Emeritus). Founding elder, New Beginnings Community Church.</dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Most accessible of the 1Flourish partners. Read the book before first contact. Submitting a VSP story to his blog is a warm entry move. His Connect Silicon Valley network spans 16 years of relationship building.</div>
+</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">TT</div><div><div class="person-name">Tom Tognoli</div><div class="person-role">Partner &bull; Silicon Valley &bull; Berkshire Hathaway Exit</div></div></div>
+<div class="person-grid">
+<dt>Background</dt><dd>Born Sunnyvale 1965. ADHD + dyslexia. Co-founded Intero Real Estate Services (2002) → built into largest real estate firm in Silicon Valley ($12B+ annual sales) → <strong>acquired by Berkshire Hathaway (2014)</strong>. Remained CEO through 2019.</dd>
+<dt>Faith Journey</dt><dd>Stopped drinking 1999. Faith came through son's ADHD diagnosis and enrolling at Open Door/Menlo Church. Wife survived cancer 2009 — faith deepened.</dd>
+<dt>Platform</dt><dd><strong>Monday Morning Mojo</strong> blog — 20,000+ subscribers, 10+ years of archives. F5 Framework: Faith, Family, Friends, Fitness, Finance.</dd>
+<dt>Other</dt><dd>Post-BH: ICON, Bass Rocks Asset Management, GuideTime, OZ FundHub (bridges Opportunity Zone real estate with VC).</dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Reference a specific Monday Morning Mojo post. His F5 framework aligns with VSP values. OZ FundHub involvement bridges real estate and VC — potentially interesting for VSP deal flow. Attends Menlo Church with David Lane.</div>
+</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">DL</div><div><div class="person-name">David Lane</div><div class="person-role">Co-Founder & Partner &bull; Mountain View, CA &bull; $2B+ VC Managed</div></div></div>
+<div class="person-grid">
+<dt>Education</dt><dd>USC BSEE. Harvard MBA.</dd>
+<dt>Career</dt><dd>Sr VC Investment Officer, Harvard Management Company (~$8B endowment). MD, ONSET Ventures (~$1B AUM). Co-founded Diamondhead Ventures ($140M fund). <strong>Exits: Cavium (IPO→Marvell), Danger (→Microsoft ~$500M), Entercept (→McAfee), PassMark (→RSA), UPEK (→Apple)</strong>.</dd>
+<dt>Faith</dt><dd>Deacon at Menlo Church. Active in church planting. Quietest public footprint of the group.</dd>
+<dt>Network</dt><dd>USC Viterbi Board of Councilors. Strong USC identity. FDI platform appearances.</dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Warm intro preferred over cold — quietest partner. His Diamondhead exits ($500M+ to Microsoft alone) give him serious VC credibility. Menlo Church connection with Tognoli is the bridge.</div>
+</div>
+
+<div class="person">
+<div class="person-header"><div class="person-avatar">AM</div><div><div class="person-name">Andrew Miller</div><div class="person-role">Founder & Managing Partner &bull; Overland Park, KS &bull; 3x CEO</div></div></div>
+<div class="person-grid">
+<dt>Career</dt><dd>EVP GE Capital. President TRW. 3x CEO. Took Bankrate.com public — personally closed 55 corporate partnerships (Microsoft, AOL, major media). Currently transitioning to Inspire Private Equity (medtech).</dd>
+<dt>Focus</dt><dd>SaaS, Marketplaces, Enterprise — seed stage. <strong>Only Midwest-based GP</strong> in the group (Overland Park, KS).</dd>
+<dt>Personal</dt><dd>Golfs. May have reduced 1Flourish bandwidth due to Inspire PE transition.</dd>
+</div>
+<div class="person-angle"><strong>Connection Angle:</strong> Ask about the Bankrate partnership deals — no one asks him that. His 55 corporate partnerships story is underreported. Midwest base could align with VSP geography.</div>
+</div>
+
+<div class="section-title">Investment Thesis</div>
+<div class="card">
+<table>
+<tr><th>Dimension</th><th>Detail</th></tr>
+<tr><td>Stage</td><td>Seed + Series A</td></tr>
+<tr><td>Check Size</td><td>$50K–$1M (sweet spot ~$500K)</td></tr>
+<tr><td>Sectors</td><td>B2B Enterprise, Deep Tech, Healthcare, Media, Real Estate Tech</td></tr>
+<tr><td>Differentiator</td><td>Active culture-building via Lencioni methodology. Mentorship-intensive. "High character + high capacity" founders.</td></tr>
+<tr><td>Geography</td><td>Silicon Valley / Bay Area primary; broader US</td></tr>
+<tr><td>Motto</td><td>"Empower — Grow — Transform"</td></tr>
+</table>
+</div>
+
+<div class="section-title">Portfolio Companies (Selected)</div>
+<div class="card">
+<table>
+<tr><th>Company</th><th>Sector</th><th>Notes</th></tr>
+<tr><td><strong>Lemurian Labs</strong></td><td>AI Hardware</td><td>AI chip architecture. <strong>$28M Series A</strong> (Dec 2025). Co-investors: Pebblebed, Hexagon.</td></tr>
+<tr><td><strong>Cascade Bio</strong></td><td>Biotech / CleanTech</td><td>Enzyme-based biomanufacturing (replacing petrochemicals). CU Boulder spinout. <strong>$6M raised</strong> (Sep 2025).</td></tr>
+<tr><td><strong>Stakeholder Labs</strong></td><td>Stakeholder Engagement</td><td>$4.2M seed round with 1Flourish participation.</td></tr>
+<tr><td><strong>Butlr</strong></td><td>IoT / Workplace</td><td>Anonymous people-sensing platform (wireless motion sensors).</td></tr>
+<tr><td><strong>CrowdSmart</strong></td><td>AI / Decision Intel</td><td>Human + AI decision intelligence platform.</td></tr>
+<tr><td><strong>Trebellar</strong></td><td>Smart Buildings</td><td>"Operating system for smart buildings." Dedicated 1Flourish blog post.</td></tr>
+<tr><td><strong>WeatherPromise</strong></td><td>Climate / InsurTech</td><td>AI-powered travel weather protection. Most recent (Dec 2025).</td></tr>
+<tr><td><strong>GoCheck Kids</strong></td><td>HealthTech</td><td>Vision screening technology for children.</td></tr>
+<tr><td><strong>TuDOC</strong></td><td>HealthTech</td><td>Clinics/outpatient services tech. Jul 2024.</td></tr>
+<tr><td><strong>Caravan</strong></td><td>Media / Events</td><td>Platform connecting creators to events/destinations.</td></tr>
+<tr><td><strong>Enjoy</strong></td><td>Consumer Tech</td><td>Premium home delivery/tech setup service.</td></tr>
+</table>
+<p style="color:var(--muted);font-size:.8rem;margin-top:.5rem;">Partner pre-fund exits: Cavium (IPO→Marvell), Danger (→Microsoft ~$500M), Entercept (→McAfee), PassMark (→RSA), UPEK (→Apple), Intero (→Berkshire Hathaway).</p>
+</div>
+</div>
+
+<!-- ==================== VSP TEAM ==================== -->
+<div class="panel" id="panel-9">
+
+<div class="firm-header">
+  <div class="firm-icon" style="background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2));">VSP</div>
+  <div class="firm-meta">
+    <h2>Victory Square Partners</h2>
+    <div class="loc">Washington DC / Philadelphia / NYC Corridor</div>
+    <div class="url"><a href="https://vspartners.us" target="_blank">vspartners.us</a></div>
+    <div class="firm-tags">
+      <span class="tag tag-blue">Software Engineering</span>
+      <span class="tag tag-purple">AI Infrastructure</span>
+      <span class="tag tag-green">Inc 5000 #2149</span>
+      <span class="tag tag-amber">Faith-Aligned Clients</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">Our Team</div>
+
+<!-- Paul Doman -->
+<div class="person">
+<div class="person-header">
+  <div class="person-avatar">PD</div>
+  <div>
+    <div style="font-weight:600;font-size:1rem;">Paul Doman</div>
+    <div style="color:var(--muted);font-size:.82rem;">CEO & Co-Founder, Victory Square Partners</div>
+    <div style="color:var(--dim);font-size:.78rem;">Washington DC Metro &bull; Franciscan University of Steubenville</div>
+  </div>
+</div>
+<div class="person-quote">"We're building a company that serves as a force multiplier for high-growth tech-enabled businesses."</div>
+
+<div class="card" style="margin-top:.75rem;">
+<h4>Career Timeline</h4>
+<table>
+<tr><td style="width:120px;color:var(--muted);">2009-2019</td><td><strong>U.S. Army Captain</strong> — Military intelligence / operations leadership. Built leadership and operational discipline that shaped VSP's culture.</td></tr>
+<tr><td style="color:var(--muted);">2015-2019</td><td><strong>3Pillar Global</strong> — 9+ years in software services. Rose through delivery and business development. Learned the mid-market software consulting model inside out.</td></tr>
+<tr><td style="color:var(--muted);">2019</td><td><strong>Co-founded Victory Square Partners</strong> — Launched VSP focused on DC/Philly/NYC corridor. Software development, UX design, data/AI, DevOps.</td></tr>
+<tr><td style="color:var(--muted);">2023</td><td><strong>Inc 5000 #2149</strong> — $19.7M revenue, 200% three-year growth. Validated the model at scale.</td></tr>
+<tr><td style="color:var(--muted);">2025-2026</td><td><strong>AI & SDD Pivot</strong> — Launched Specification-Driven Development (SDD) methodology. Hired Matt Walnock as Head of AI. Expanding into AI advisory services.</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h4>Key Facts</h4>
+<ul style="font-size:.82rem;color:var(--text);padding-left:1.2rem;">
+<li><strong>Military:</strong> U.S. Army Captain — operations and intelligence background</li>
+<li><strong>Education:</strong> Franciscan University of Steubenville (Catholic institution)</li>
+<li><strong>Faith:</strong> Catholic faith background; Franciscan education signals strong values-alignment with faith-driven ecosystem</li>
+<li><strong>Company:</strong> 200+ employees across US and Romania delivery centers</li>
+<li><strong>Revenue:</strong> $19.7M (Inc 5000 verified), profitable growth model</li>
+<li><strong>Clients:</strong> Mid-market tech-enabled businesses, including Faith Driven Movements/FDE</li>
+</ul>
+</div>
+
+<div class="person-angle">
+<strong>VC Connection Angles:</strong> Paul's Army officer background mirrors the military-to-mission pipeline several faith VCs fund. His Catholic/Franciscan education connects to values-driven leadership. VSP's Inc 5000 track record gives credibility as a proven operator. As CEO, Paul is the relationship opener — the "founder story" for any VC conversation.
+</div>
+</div>
+
+<!-- Tyler Goble -->
+<div class="person">
+<div class="person-header">
+  <div class="person-avatar">TG</div>
+  <div>
+    <div style="font-weight:600;font-size:1rem;">Tyler Goble</div>
+    <div style="color:var(--muted);font-size:.82rem;">Entrepreneur in Residence / Client Partner / AI Lead, Victory Square Partners</div>
+    <div style="color:var(--dim);font-size:.78rem;">US East Coast &bull; USMC Veteran (Infantry)</div>
+  </div>
+</div>
+<div class="person-quote">"We've been building inside the Faith Driven house — AI infrastructure that serves as a force multiplier for kingdom impact."</div>
+
+<div class="card" style="margin-top:.75rem;">
+<h4>Career Timeline</h4>
+<table>
+<tr><td style="width:120px;color:var(--muted);">Military</td><td><strong>U.S. Marine Corps — Infantry</strong>. Combat arms background. Mission-focus, team-first operating style forged in the most demanding environment.</td></tr>
+<tr><td style="color:var(--muted);">Post-Military</td><td><strong>Transition to tech/engineering</strong> — Self-directed path into full-stack development, AI/ML engineering.</td></tr>
+<tr><td style="color:var(--muted);">2025-Present</td><td><strong>EIR at Victory Square Partners</strong> — Triple role: selling new engagements, owning growth accounts (GoCanvas, FDE, SixMap), and building AI infrastructure for clients.</td></tr>
+<tr><td style="color:var(--muted);">2026</td><td><strong>SDD Initiative Lead</strong> — Internal champion for Specification-Driven Development methodology. Building the go-to-market narrative alongside Paul Doman.</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h4>Technical Stack & Skills</h4>
+<ul style="font-size:.82rem;color:var(--text);padding-left:1.2rem;">
+<li><strong>AI/ML:</strong> Graph RAG, Claude/Anthropic API, open-source models, LLM agent architectures</li>
+<li><strong>Languages:</strong> Python, JavaScript/TypeScript, full-stack web</li>
+<li><strong>Infrastructure:</strong> MCP protocol, multi-agent orchestration, Vercel, DevOps pipelines</li>
+<li><strong>CRM/Ops:</strong> Built custom Pipedrive MCP server; designed 14-agent sales ops system</li>
+<li><strong>Faith-Aligned Work:</strong> Leads VSP's engagement with Faith Driven Entrepreneur / Faith Driven Movements — AI infrastructure for a global faith network</li>
+</ul>
+</div>
+
+<div class="card">
+<h4>Key Facts</h4>
+<ul style="font-size:.82rem;color:var(--text);padding-left:1.2rem;">
+<li><strong>Military:</strong> USMC Infantry veteran — the highest-credibility military background for values-driven communities</li>
+<li><strong>FDE Relationship:</strong> Direct, hands-on delivery lead for Faith Driven Entrepreneur. Knows the people, the tech stack, the community from the inside</li>
+<li><strong>Entrepreneurial Posture:</strong> EIR title = equity risk alongside clients, building new practice areas, not a hired consultant</li>
+<li><strong>Systems Thinker:</strong> Built a sophisticated multi-agent AI operations system; stewardship mentality — everything documented, nothing wasted</li>
+<li><strong>Public Presence:</strong> Minimal as of March 2026 — emerging thought leader, not yet established. First-mover opportunity in faith-driven AI space</li>
+</ul>
+</div>
+
+<div class="person-angle">
+<strong>VC Connection Angles:</strong> Tyler's Marine infantry background + faith-aligned client work (FDE) is the single warmest credential in this entire network. "We've been building inside your house" is the opener with Henry Kaestner. His hands-on AI engineering gives technical credibility that most sales people lack. The EIR role signals entrepreneurial risk-taking. Best deployed as the technical storyteller in any VC pitch.
+</div>
+</div>
+
+<!-- Matt Walnock -->
+<div class="person">
+<div class="person-header">
+  <div class="person-avatar">MW</div>
+  <div>
+    <div style="font-weight:600;font-size:1rem;">Matt Walnock</div>
+    <div style="color:var(--muted);font-size:.82rem;">Head of AI & Advisory Services, Victory Square Partners</div>
+    <div style="color:var(--dim);font-size:.78rem;">Washington DC Metro &bull; Penn State (Computer Science)</div>
+  </div>
+</div>
+<div class="person-quote">"The best AI implementations start with understanding the business problem, not the technology."</div>
+
+<div class="card" style="margin-top:.75rem;">
+<h4>Career Timeline</h4>
+<table>
+<tr><td style="width:120px;color:var(--muted);">Early Career</td><td><strong>IBM</strong> — Enterprise technology foundation. Large-scale systems thinking.</td></tr>
+<tr><td style="color:var(--muted);">2000s</td><td><strong>Ubizen → NetSec</strong> — Cybersecurity / network security. Deep technical leadership in security infrastructure.</td></tr>
+<tr><td style="color:var(--muted);">~2007-2014</td><td><strong>Parature — CTO</strong> — Built and led engineering for customer service SaaS platform. <strong>Sold to Microsoft.</strong> Proven exit — built, scaled, and sold a tech company.</td></tr>
+<tr><td style="color:var(--muted);">Post-Parature</td><td><strong>Longitude-77 — Co-Founder</strong> — Advisory and investment firm. Operator turned advisor/investor.</td></tr>
+<tr><td style="color:var(--muted);">Mar 2026</td><td><strong>Joined VSP as Head of AI & Advisory</strong> — Brought in to lead the AI practice and advisory services expansion.</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h4>Key Facts</h4>
+<ul style="font-size:.82rem;color:var(--text);padding-left:1.2rem;">
+<li><strong>Patents:</strong> 6 technology patents — rare for a services firm executive, signals deep technical innovation</li>
+<li><strong>Exit:</strong> Parature → Microsoft acquisition. Proven builder-to-exit track record</li>
+<li><strong>Education:</strong> Penn State, Computer Science</li>
+<li><strong>Advisory Experience:</strong> Longitude-77 co-founder — has been on both sides of the table (operator + advisor/investor)</li>
+<li><strong>Network:</strong> Deep DC tech ecosystem connections from IBM → Ubizen → NetSec → Parature → Microsoft pipeline</li>
+<li><strong>AI Positioning:</strong> Business-first AI strategist, not just a technologist. Understands how to frame AI for executive audiences</li>
+</ul>
+</div>
+
+<div class="person-angle">
+<strong>VC Connection Angles:</strong> Matt's CTO-to-exit story (Parature → Microsoft) is the most VC-legible credential on the VSP team. VCs respect operators who've built and sold. His 6 patents add technical weight. The Longitude-77 advisory background means he speaks investor language. Best deployed as the "technical credibility + business judgment" voice in VC conversations. His DC tech network may overlap with Sovereign's Capital deal flow.
+</div>
+</div>
+
+<!-- Common Ground Matrix -->
+<div class="section-title" style="margin-top:2rem;">Common Ground Matrix — VSP ↔ VC Firms</div>
+
+<div class="card">
+<h3>Connection Map: Where VSP People Meet VC People</h3>
+<p style="color:var(--muted);font-size:.82rem;margin-bottom:1rem;">This matrix maps natural connection points between VSP team members and key individuals at each firm. Use it to identify warm paths and conversation starters.</p>
+
+<table>
+<tr>
+<th style="width:140px;">Firm / Person</th>
+<th>Paul Doman</th>
+<th>Tyler Goble</th>
+<th>Matt Walnock</th>
+</tr>
+
+<tr style="background:rgba(16,185,129,.04);">
+<td colspan="4" style="font-weight:600;color:var(--green);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;padding:.5rem .75rem;">Sovereign's Capital</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Henry Kaestner</td>
+<td><span class="tag tag-green">Faith</span> Catholic ↔ Evangelical bridge; both founders who built from scratch</td>
+<td><span class="tag tag-green">Faith</span> <span class="tag tag-purple">FDE</span> Tyler builds AI for FDE — Henry co-founded it. <strong>Warmest path in entire network.</strong></td>
+<td><span class="tag tag-blue">Operator</span> Both built companies that scaled; Henry respects operator-founders</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Jeff Roush</td>
+<td><span class="tag tag-blue">Operator</span> Both run operations at scale; Jeff manages $780M portfolio ops</td>
+<td><span class="tag tag-purple">Tech</span> Jeff oversees portco tech — Tyler's AI infra expertise directly relevant</td>
+<td><span class="tag tag-blue">CTO</span> Matt's CTO experience maps to Jeff's portfolio company oversight</td>
+</tr>
+
+<tr style="background:rgba(16,185,129,.04);">
+<td colspan="4" style="font-weight:600;color:var(--green);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;padding:.5rem .75rem;">11 Tribes Ventures</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Mark Phillips</td>
+<td><span class="tag tag-green">Military</span> Paul (Army) ↔ Mark (military family values). Both founders with "failure → success" arcs</td>
+<td><span class="tag tag-green">Military</span> <span class="tag tag-green">Faith</span> Marine vet + faith work. Mark's "Diasense failure" story resonates with Tyler's pivot-to-tech arc</td>
+<td><span class="tag tag-blue">Operator</span> Mark's Niche → PetSmart exit mirrors Matt's Parature → Microsoft exit</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Kristina Chapple</td>
+<td><span class="tag tag-blue">Growth</span> Both building high-growth firms; Kristina's Forbes 30U30 energy matches VSP's Inc 5000 pace</td>
+<td><span class="tag tag-purple">Tech</span> Kristina evaluates portco tech — Tyler's AI infrastructure directly useful</td>
+<td><span class="tag tag-blue">CTO</span> Matt's patents + exit story = technical credibility Kristina can validate</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Pete Ochs</td>
+<td><span class="tag tag-green">Faith</span> <span class="tag tag-green">Mission</span> Both values-driven leaders. Pete's prison manufacturing + Paul's military service = shared "impact > profit" ethos</td>
+<td><span class="tag tag-green">Mission</span> Pete's Ambassadors Impact ↔ Tyler's FDE work — same ecosystem, different entry points</td>
+<td><span class="tag tag-blue">Board</span> Pete sits on 15+ boards — Matt's advisory background (Longitude-77) is the right language</td>
+</tr>
+
+<tr style="background:rgba(16,185,129,.04);">
+<td colspan="4" style="font-weight:600;color:var(--green);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;padding:.5rem .75rem;">Talanton</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Chris Simms</td>
+<td><span class="tag tag-green">Faith</span> Both faith-driven founders. Chris's "faithful stewardship" thesis aligns with Paul's Franciscan values</td>
+<td><span class="tag tag-purple">Africa</span> <span class="tag tag-purple">Tech</span> Talanton invests in African startups — Tyler's FDE work touches global faith networks</td>
+<td><span class="tag tag-blue">Strategy</span> Chris was strategy consultant (Booz Allen, Dalberg) — Matt speaks strategic advisory fluently</td>
+</tr>
+
+<tr style="background:rgba(16,185,129,.04);">
+<td colspan="4" style="font-weight:600;color:var(--green);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;padding:.5rem .75rem;">Fire Road</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Tim Metzner</td>
+<td><span class="tag tag-green">Founder</span> Both Cincinnati/Midwest-adjacent founders who bootstrapped. Tim's podcast features founder stories — Paul is one</td>
+<td><span class="tag tag-green">Faith</span> <span class="tag tag-purple">Resilience</span> Tim's founder wellbeing focus ↔ Tyler's military resilience. Shared "grit + purpose" narrative</td>
+<td><span class="tag tag-blue">CTO</span> Tim's portcos need technical leadership — Matt's CTO track record is exactly what Fire Road backs</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Liz Walker</td>
+<td><span class="tag tag-blue">Growth</span> Liz's operator background (Deloitte) maps to Paul's services firm scaling</td>
+<td><span class="tag tag-purple">Tech</span> Liz evaluates portco operations — Tyler's AI ops automation is directly relevant</td>
+<td><span class="tag tag-blue">Exit</span> Liz's deal evaluation ↔ Matt's "built and sold" perspective from operator side</td>
+</tr>
+
+<tr style="background:rgba(16,185,129,.04);">
+<td colspan="4" style="font-weight:600;color:var(--green);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;padding:.5rem .75rem;">Kaleo VC</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Andrew Firman</td>
+<td><span class="tag tag-green">Faith</span> Andrew spun out of Sovereign's (Henry Kaestner). Paul ↔ Henry ↔ Andrew = warm chain</td>
+<td><span class="tag tag-purple">FDE</span> <span class="tag tag-purple">Tech</span> Andrew's Africa-focused portcos need engineering partners — Tyler's AI infra + FDE network = natural fit</td>
+<td><span class="tag tag-blue">CTO</span> Kaleo portcos are early-stage and need CTO-level guidance. Matt's been there</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Jumoke Kukoyi</td>
+<td><span class="tag tag-blue">Operator</span> Both scaled operations across geographies (VSP: Romania delivery; Jumoke: Africa portfolio)</td>
+<td><span class="tag tag-purple">Africa</span> Jumoke's Lagos base + Tyler's global FDE network = complementary reach</td>
+<td><span class="tag tag-blue">Strategy</span> Jumoke's ops background ↔ Matt's advisory lens on scaling portcos</td>
+</tr>
+
+<tr style="background:rgba(16,185,129,.04);">
+<td colspan="4" style="font-weight:600;color:var(--green);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;padding:.5rem .75rem;">1Flourish</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Skip Vaccarello</td>
+<td><span class="tag tag-green">Faith</span> <span class="tag tag-blue">Bay Area</span> Both faith-driven leaders. Skip's 16-year Connect SV leadership shows deep community commitment Paul mirrors</td>
+<td><span class="tag tag-purple">Tech</span> Skip's book "Finding God in Silicon Valley" ↔ Tyler building AI for God's kingdom. Natural conversation opener</td>
+<td><span class="tag tag-blue">CTO</span> Skip was COO at Yodlee — operator-to-investor path Matt understands intimately</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Tom Tognoli</td>
+<td><span class="tag tag-blue">Operator</span> Both built service businesses from scratch (Intero → Berkshire Hathaway, VSP → Inc 5000)</td>
+<td><span class="tag tag-green">Resilience</span> Tom's "Monday Morning Mojo" wellbeing focus ↔ Tyler's military-forged resilience</td>
+<td><span class="tag tag-blue">Growth</span> Tom scaled Intero to 2000+ agents — Matt's scaling experience (Parature) is the same playbook in tech</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">David Lane</td>
+<td><span class="tag tag-green">Faith</span> David leads VC at 1Flourish + attends Menlo Church. Paul's Franciscan values bridge naturally</td>
+<td><span class="tag tag-purple">Tech</span> David's Rackspace VC background + Tyler's AI delivery = tech lingua franca</td>
+<td><span class="tag tag-blue">CTO</span> David evaluates deep tech — Matt's patents and CTO tenure speak directly to this</td>
+</tr>
+
+<tr style="background:rgba(16,185,129,.04);">
+<td colspan="4" style="font-weight:600;color:var(--green);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;padding:.5rem .75rem;">Heron Ventures</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Jonathan Thiessen</td>
+<td><span class="tag tag-green">Mission</span> Jonathan's Operation Mobilization / Scatter Global missionary network ↔ Paul's faith-driven company building</td>
+<td><span class="tag tag-green">Faith</span> <span class="tag tag-purple">Global</span> Missionary networks → entrepreneurship networks. Tyler's FDE delivery is the tech version of this transformation</td>
+<td><span class="tag tag-blue">Strategy</span> Heron is early-stage — Matt's CTO advisory is exactly what their portcos need</td>
+</tr>
+
+<tr style="background:rgba(16,185,129,.04);">
+<td colspan="4" style="font-weight:600;color:var(--green);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;padding:.5rem .75rem;">Jeremiah Fund</td>
+</tr>
+<tr>
+<td style="color:var(--amber);font-weight:500;">Andrew Clark</td>
+<td><span class="tag tag-green">Faith</span> Clark's "Practice Resurrection" (Wendell Berry) philosophy ↔ Paul's Franciscan intellectual tradition. Deepest theological alignment</td>
+<td><span class="tag tag-green">Resilience</span> Clark's literary/theological framing of entrepreneurship ↔ Tyler's military-to-mission arc. Both see business as calling</td>
+<td><span class="tag tag-blue">Operator</span> Jeremiah Fund backs founder wellbeing — Matt's "CTO who survived a startup exit" story is exactly the journey they support</td>
+</tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Top 5 Warmest Paths (Ranked)</h3>
+<table>
+<tr><th style="width:30px;">#</th><th>Path</th><th>VSP Lead</th><th>Why It's Warm</th></tr>
+<tr><td style="color:var(--green);font-weight:700;">1</td><td><strong>Tyler → Henry Kaestner</strong> (Sovereign's / Kaleo)</td><td>Tyler</td><td>Tyler builds AI for FDE — Henry co-founded FDE. "We've been building inside your house." No warmer intro exists in this network.</td></tr>
+<tr><td style="color:var(--green);font-weight:700;">2</td><td><strong>Paul → Mark Phillips</strong> (11 Tribes)</td><td>Paul</td><td>Both military-adjacent founders with "failure → success" stories. Paul's Army background + faith + Inc 5000 = Mark's exact founder archetype.</td></tr>
+<tr><td style="color:var(--green);font-weight:700;">3</td><td><strong>Matt → Kristina Chapple</strong> (11 Tribes)</td><td>Matt</td><td>Matt's 6 patents + Parature → Microsoft exit gives instant technical credibility. Kristina evaluates portco tech for 11T.</td></tr>
+<tr><td style="color:var(--green);font-weight:700;">4</td><td><strong>Tyler → Andrew Firman</strong> (Kaleo)</td><td>Tyler</td><td>Phil Diekemper → Henry Kaestner → Andrew Firman warm chain. Kaleo portcos need engineering partners. Tyler delivers exactly that.</td></tr>
+<tr><td style="color:var(--green);font-weight:700;">5</td><td><strong>Paul → Tim Metzner</strong> (Fire Road)</td><td>Paul</td><td>Tim's podcast features founder stories — Paul's Army → bootstrap → Inc 5000 arc is made for it. Shared founder resilience thesis.</td></tr>
+</table>
+</div>
+
+</div>
+
+<!-- ==================== CROSS-NETWORK ==================== -->
+<div class="panel" id="panel-10">
+
+<div class="section-title">Network Connections</div>
+<div class="card">
+<h3>Key Relationship Bridges</h3>
+<table>
+<tr><th>Connection</th><th>Firms</th><th>Nature</th></tr>
+<tr><td><strong>Henry Kaestner</strong></td><td>Sovereign's Capital + Kaleo VC</td><td><span class="tag tag-red">Co-founder of BOTH firms</span>. The single most connected node in this network.</td></tr>
+<tr><td><strong>Andrew Firman</strong></td><td>Kaleo VC ← Sovereign's Capital</td><td>Kaleo co-founder was previously Principal at Sovereign's Capital (30+ Africa deals).</td></tr>
+<tr><td><strong>Faith Driven Investor</strong></td><td>All 8 firms</td><td>Network founded by Henry Kaestner. All 8 are listed members.</td></tr>
+<tr><td><strong>Ambassadors Impact</strong></td><td>Sovereign's, 11 Tribes, Kaleo, 1Flourish</td><td>4 of 8 firms are portfolio members.</td></tr>
+<tr><td><strong>Impact Foundation</strong></td><td>Heron, 11 Tribes, Kaleo, Talanton</td><td>4 of 8 firms listed in portfolio.</td></tr>
+<tr><td><strong>Wheaton College</strong></td><td>11 Tribes + Talanton</td><td>Mark Phillips (11T) and Jon Halverson (Talanton) both Wheaton alumni.</td></tr>
+<tr><td><strong>Ocean Accelerator</strong></td><td>Fire Road</td><td>Christy Johnson was COO; Tim Metzner co-founded both.</td></tr>
+</table>
+</div>
+
+<div class="section-title">Geographic Clusters</div>
+<div class="card">
+<div class="network-grid">
+  <div class="net-node">
+    <h4><span class="tag tag-blue">Silicon Valley</span></h4>
+    <p style="font-size:.82rem;margin-top:.4rem;"><strong>Sovereign's Capital</strong> (HQ San Jose)<br><strong>1Flourish</strong> (Mountain View)</p>
+    <div class="geo" style="margin-top:.5rem;">Institutional VC + deep tech focus</div>
+  </div>
+  <div class="net-node">
+    <h4><span class="tag tag-green">US Midwest</span></h4>
+    <p style="font-size:.82rem;margin-top:.4rem;"><strong>11 Tribes</strong> (Glen Ellyn IL)<br><strong>Fire Road</strong> (Cincinnati OH)</p>
+    <div class="geo" style="margin-top:.5rem;">"Silicon Heartland" — founder-centric, non-traditional hubs</div>
+  </div>
+  <div class="net-node">
+    <h4><span class="tag tag-amber">US Southeast</span></h4>
+    <p style="font-size:.82rem;margin-top:.4rem;"><strong>Jeremiah Fund</strong> (Birmingham AL)<br><strong>Sovereign's</strong> (Durham, Chattanooga, Atlanta)</p>
+    <div class="geo" style="margin-top:.5rem;">Emerging tech markets + faith community depth</div>
+  </div>
+  <div class="net-node">
+    <h4><span class="tag tag-purple">East Africa</span></h4>
+    <p style="font-size:.82rem;margin-top:.4rem;"><strong>Talanton</strong> (Kenya, Uganda, Rwanda)<br><strong>Heron Ventures</strong> (Nairobi)<br><strong>Kaleo VC</strong> (Nigeria, Kenya)</p>
+    <div class="geo" style="margin-top:.5rem;">3 firms deploying capital in Africa — highest concentration</div>
+  </div>
+</div>
+</div>
+
+<div class="section-title">Common Themes</div>
+<div class="card">
+<table>
+<tr><th>Theme</th><th>Details</th></tr>
+<tr><td><strong>All Explicitly Faith-Driven</strong></td><td>Every firm in this network is grounded in Christian faith as a core investment principle — not ESG, not impact-adjacent, but explicitly biblical/Kingdom-oriented.</td></tr>
+<tr><td><strong>Founder Wellbeing</strong></td><td>11 Tribes (2% resilience allocation), Fire Road (mgmt fee allocation), 1Flourish (Lencioni coaching), Jeremiah Fund (discipleship model) — 4 of 8 firms have formalized founder care beyond capital.</td></tr>
+<tr><td><strong>Emerging Markets</strong></td><td>3 of 8 firms (Talanton, Heron, Kaleo) focus on Africa. Sovereign's has a Jakarta office. Combined, this network has significant frontier market reach.</td></tr>
+<tr><td><strong>Small/Emerging Managers</strong></td><td>Except for Sovereign's ($780M), most are small funds ($5M–$57M). This is a network of conviction-driven emerging managers, not institutional incumbents.</td></tr>
+<tr><td><strong>Non-Coastal US</strong></td><td>11 Tribes, Fire Road, and Jeremiah Fund explicitly focus on Midwest/Southeast deal flow — deliberately avoiding coastal VC competition.</td></tr>
+</table>
+</div>
+
+<div class="section-title">VSP Engagement Recommendations</div>
+<div class="card">
+<table>
+<tr><th style="width:30%;">Recommendation</th><th>Rationale</th></tr>
+<tr><td><span class="tag tag-green">Sovereign's Capital is the anchor</span></td><td>Largest ($780M), most connected (Henry Kaestner is the hub), most diversified (5 asset classes). Their FoF/co-invest arm could be an LP target for funds in VSP's network.</td></tr>
+<tr><td><span class="tag tag-blue">11 Tribes + Fire Road are closest to VSP profile</span></td><td>US early-stage tech, values-aligned, non-coastal. Their portfolio companies (B2B SaaS, AI, cybersecurity) overlap with VSP's client base. Natural co-sell or referral partners.</td></tr>
+<tr><td><span class="tag tag-purple">Africa trio for emerging market interests</span></td><td>Kaleo, Talanton, and Heron collectively cover the East African tech + impact landscape. Relevant if VSP has diaspora founders or emerging market expansion plays.</td></tr>
+<tr><td><span class="tag tag-amber">Jeremiah Fund is a relationship play</span></td><td>Smallest and earliest, but Andrew Clark's 8-year Lion's Den network in the Southeast is deep. Good for Birmingham/Southeast deal flow.</td></tr>
+<tr><td><span class="tag tag-green">1Flourish has outsized pedigree</span></td><td>$1B+ partner track record (Harvard endowment, Diamondhead exits to Microsoft/Apple, Berkshire Hathaway acquisition) in a small fund wrapper. Silicon Valley access through experienced operators.</td></tr>
+</table>
+</div>
+
+<div class="section-title">Combined Portfolio Landscape</div>
+<div class="card">
+<h3>Sector Heat Map Across All 8 Firms</h3>
+<table>
+<tr><th>Sector</th><th>Firms Active</th><th>Notable Companies</th></tr>
+<tr><td>Fintech</td><td>Sovereign's, Kaleo, Talanton, 11 Tribes</td><td>Pigeon, Billboxx, Pezesha, Komunal, Legal Karma</td></tr>
+<tr><td>AI / ML</td><td>Sovereign's, Fire Road, 1Flourish, Kaleo</td><td>Level3 AI, Ciphero AI, Tembo, Narratize, CrowdSmart, Flamel.ai</td></tr>
+<tr><td>Healthcare</td><td>Sovereign's, 1Flourish, Kaleo</td><td>Preveta, Passage Health, GoCheck Kids, TuDOC, PBR Life Sciences</td></tr>
+<tr><td>EdTech</td><td>Fire Road, Kaleo, Talanton</td><td>Magic Kids, Zydii, Lingawa, Educor</td></tr>
+<tr><td>AgTech / Food</td><td>Talanton, 11 Tribes</td><td>Kentegra, BioFarms, GoNanas</td></tr>
+<tr><td>Enterprise SaaS</td><td>Sovereign's, 11 Tribes, 1Flourish, Fire Road</td><td>Relay, Evercycle, Circadian Risk, Trebellar, SMB.co</td></tr>
+<tr><td>CleanTech / Energy</td><td>Talanton, Kaleo</td><td>BURN Manufacturing, Beacon Power Services</td></tr>
+<tr><td>Consumer</td><td>11 Tribes, Talanton, Fire Road</td><td>GoNanas, Enda, MoKo Home</td></tr>
+</table>
+</div>
+
+</div>
+
+</div><!-- end .content -->
+
+<div style="text-align:center;padding:2rem;color:var(--dim);font-size:.75rem;border-top:1px solid var(--border);">
+  Prepared by Victory Square Partners &bull; March 2026 &bull; Source: Vip Vipperman / Eagle Venture Fund / Clapham Community<br>
+  Research compiled via web intelligence gathering. Data accuracy as of March 27, 2026.
+</div>
+
+<script>
+function showTab(idx) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-'+idx).classList.add('active');
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+}
+</script>
+</body>
+</html>
