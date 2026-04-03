@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>USNA Summit 2026 — Tracker</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#003366;--navy-dark:#001d3d;--navy-light:#004488;
+  --gold:#C5A55A;--gold-light:#D4BC7A;--gold-pale:#F5EDD4;--gold-dark:#A8893E;
+  --white:#fff;--off-white:#F7F8FA;--gray-50:#F9FAFB;--gray-100:#F3F4F6;
+  --gray-200:#E5E7EB;--gray-300:#D1D5DB;--gray-400:#9CA3AF;--gray-500:#6B7280;
+  --gray-600:#4B5563;--gray-700:#374151;--gray-900:#111827;
+  --green:#059669;--green-light:#D1FAE5;--red:#DC2626;--red-light:#FEE2E2;
+  --amber:#D97706;--amber-light:#FEF3C7;--blue:#2563EB;--blue-light:#DBEAFE;
+  --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08);
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--off-white);color:var(--gray-900);line-height:1.6;-webkit-font-smoothing:antialiased;padding-bottom:calc(60px + var(--safe-bottom))}
+a{color:var(--navy);text-decoration:none}
+
+/* HEADER — mobile-first */
+.header{background:linear-gradient(145deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-light) 100%);color:var(--white);padding:calc(1rem + var(--safe-top)) 1rem 1rem;position:relative;overflow:hidden}
+.header::after{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(197,165,90,.2) 0%,transparent 70%);pointer-events:none}
+.header h1{font-size:1.25rem;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+.header h1 span{color:var(--gold)}
+.sub{color:rgba(255,255,255,.75);font-size:.82rem;margin-top:.2rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:1rem}
+.stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:.6rem .5rem;text-align:center}
+.stat .v{font-size:1.4rem;font-weight:800;color:var(--gold);line-height:1}
+.stat .l{font-size:.6rem;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.6);margin-top:.2rem}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:600;margin-top:.75rem}
+.pill-ok{background:rgba(5,150,105,.15);color:#6ee7b7;border:1px solid rgba(5,150,105,.25)}
+.pill-ok::before{content:'';width:7px;height:7px;border-radius:50%;background:#10b981;animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* BOTTOM TAB BAR — mobile native feel */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--gray-200);display:flex;z-index:200;padding-bottom:var(--safe-bottom);box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 4px;border:none;background:none;cursor:pointer;color:var(--gray-400);font-size:.6rem;font-weight:500;transition:color .15s;-webkit-tap-highlight-color:transparent;min-width:0}
+.tab-btn .ico{font-size:1.2rem;line-height:1}
+.tab-btn.active{color:var(--navy)}
+.tab-btn.active .ico{color:var(--gold)}
+
+/* MAIN */
+.main{max-width:800px;margin:0 auto;padding:.75rem}
+.panel{display:none}
+.panel.active{display:block}
+section h2{font-size:1.15rem;font-weight:700;color:var(--navy);margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:1rem;margin-bottom:.75rem;box-shadow:var(--shadow)}
+
+/* BADGES */
+.b{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.b-done{background:var(--green-light);color:var(--green)}
+.b-prog{background:var(--blue-light);color:var(--blue)}
+.b-pend{background:var(--gray-100);color:var(--gray-500)}
+.b-up{background:var(--amber-light);color:var(--amber)}
+.b-crit{background:var(--red-light);color:var(--red)}
+.b-high{background:#FEF3C7;color:#B45309}
+.b-med{background:var(--blue-light);color:var(--blue)}
+.b-low{background:var(--gray-100);color:var(--gray-500)}
+
+/* TIMELINE */
+.tl{position:relative;padding-left:1.5rem}
+.tl::before{content:'';position:absolute;left:5px;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,var(--gold),var(--navy))}
+.ti{position:relative;margin-bottom:1rem;padding-left:1.25rem}
+.ti::before{content:'';position:absolute;left:-1.45rem;top:6px;width:10px;height:10px;border-radius:50%;border:2px solid var(--gold);background:var(--white);z-index:1}
+.ti.done::before{background:var(--green);border-color:var(--green)}
+.ti.ms::before{border-color:var(--red);background:var(--red-light)}
+.ti.ev::before{border-color:var(--gold);background:var(--gold);width:12px;height:12px;left:-1.52rem}
+.td{font-size:.68rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.04em}
+.tt{font-weight:600;font-size:.88rem;color:var(--gray-900);margin-top:1px}
+.to{font-size:.76rem;color:var(--gray-500);margin-top:2px}
+
+/* DELIVERABLE CARDS */
+.del{border-left:4px solid var(--gold)}
+.del h3{font-size:.92rem;font-weight:700;color:var(--navy);margin-bottom:.35rem}
+.dm{font-size:.78rem;color:var(--gray-600);line-height:1.7}
+.dm strong{color:var(--gray-700)}
+.dm .sub-tasks{margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--gray-100);font-size:.72rem;color:var(--gray-500)}
+.dm .sub-tasks div{padding:2px 0}
+
+/* SPONSOR TABLE — mobile card layout */
+.sp-card{display:flex;flex-direction:column;gap:.25rem}
+.sp-card .sp-name{font-weight:700;font-size:.9rem;color:var(--navy)}
+.sp-card .sp-detail{font-size:.78rem;color:var(--gray-500)}
+
+/* TEAM */
+.tc{display:flex;gap:.75rem;align-items:flex-start}
+.av{width:40px;height:40px;border-radius:50%;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0}
+.ti-info h3{font-size:.88rem;font-weight:600;margin-bottom:1px}
+.ti-info .role{font-size:.75rem;color:var(--gold-dark);font-weight:500}
+.ti-info .email{font-size:.72rem;color:var(--gray-400)}
+.ti-info .desc{font-size:.75rem;color:var(--gray-500);margin-top:2px}
+
+/* ACTION ITEMS */
+.ai{display:flex;gap:.6rem;padding:.65rem 0;border-bottom:1px solid var(--gray-100);align-items:flex-start}
+.ai:last-child{border-bottom:none}
+.ai-n{width:22px;height:22px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;flex-shrink:0;margin-top:2px}
+.ai-b{flex:1}
+.ai-t{font-weight:600;font-size:.84rem}
+.ai-m{font-size:.72rem;color:var(--gray-500);margin-top:2px}
+
+/* RISK CARDS */
+.rc{border-left:4px solid var(--gray-300);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.rc.critical{border-left-color:var(--red)}.rc.high{border-left-color:var(--amber)}.rc.medium{border-left-color:var(--blue)}.rc.low{border-left-color:var(--gray-400)}
+.rh{display:flex;justify-content:space-between;align-items:center}
+.rt{font-weight:600;font-size:.88rem;margin-left:.4rem}
+.rb{margin-top:.6rem;font-size:.8rem;color:var(--gray-600);display:none;padding-top:.5rem;border-top:1px solid var(--gray-100)}
+.rc.open .rb{display:block}
+.chv{transition:transform .2s;font-size:.7rem;color:var(--gray-400);flex-shrink:0;margin-left:.5rem}
+.rc.open .chv{transform:rotate(180deg)}
+
+/* DECISIONS */
+.dc{background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:1px solid #F59E0B22;border-left:4px solid var(--gold)}
+.dc h3{font-size:.88rem;color:var(--gray-900);font-weight:600;display:flex;align-items:flex-start;gap:.4rem}
+.dc p{font-size:.78rem;color:var(--gray-600);margin-top:.25rem}
+.dc .deadline{font-size:.68rem;font-weight:600;color:var(--red);margin-top:.35rem;text-transform:uppercase}
+.dn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--white);font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* DANGER ZONE */
+.dz{background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border:2px solid var(--red);border-radius:var(--radius);padding:1rem;margin-bottom:1rem}
+.dz h3{color:var(--red);font-size:1rem;font-weight:700;margin-bottom:.5rem}
+.dz p{font-size:.82rem;color:var(--gray-700);margin-bottom:.5rem}
+.dz ul{font-size:.78rem;color:var(--gray-600);padding-left:1.2rem}
+.dz li{margin-bottom:.3rem}
+
+/* CADENCE */
+.cad{font-size:.78rem}
+.cad .step{display:flex;gap:.5rem;padding:.5rem 0;border-bottom:1px solid var(--gray-100)}
+.cad .step:last-child{border:none}
+.cad .s-date{font-weight:700;color:var(--navy);min-width:55px;flex-shrink:0;font-size:.72rem}
+.cad .s-txt{color:var(--gray-600);flex:1}
+
+/* FOOTER */
+.footer{text-align:center;padding:1.5rem 1rem calc(70px + var(--safe-bottom));color:var(--gray-400);font-size:.72rem;border-top:1px solid var(--gray-200);margin-top:1rem}
+.footer strong{color:var(--gray-500)}
+
+/* DESKTOP */
+@media(min-width:768px){
+  .header{padding:2rem 2rem 1.5rem}
+  .header h1{font-size:1.6rem}
+  .stats{grid-template-columns:repeat(5,1fr)}
+  .main{padding:1.5rem}
+  .tab-bar{position:sticky;top:0;bottom:auto;border-top:none;border-bottom:1px solid var(--gray-200);flex-direction:row;justify-content:center;gap:0;padding-bottom:0;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  .tab-btn{flex:none;flex-direction:row;gap:6px;padding:.85rem 1.2rem;font-size:.8rem}
+  .tab-btn .ico{font-size:1rem}
+  body{padding-bottom:0}
+  .footer{padding-bottom:2rem}
+  .del-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
+  .team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem}
+}
+@media(min-width:1024px){
+  .del-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* PRINT */
+@media print{.tab-bar{display:none}.panel{display:block!important}.header{-webkit-print-color-adjust:exact;print-color-adjust:exact}body{background:#fff;padding:0}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem">
+    <div>
+      <h1>USNA <span>Entrepreneur Summit</span></h1>
+      <div class="sub">June 17-18, 2026 &bull; Flugal Center, Annapolis MD</div>
+      <div class="pill pill-ok">On Track</div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="v" id="cd">--</div><div class="l">Days Left</div></div>
+    <div class="stat"><div class="v">6</div><div class="l">Deliverables</div></div>
+    <div class="stat"><div class="v">~150</div><div class="l">Attendees</div></div>
+    <div class="stat"><div class="v">10</div><div class="l">Decisions</div></div>
+    <div class="stat"><div class="v">9</div><div class="l">Risks</div></div>
+  </div>
+</header>
+
+<nav class="tab-bar">
+  <button class="tab-btn active" data-t="timeline"><span class="ico">&#128197;</span>Timeline</button>
+  <button class="tab-btn" data-t="del"><span class="ico">&#128230;</span>Deliverables</button>
+  <button class="tab-btn" data-t="sponsor"><span class="ico">&#127941;</span>Sponsors</button>
+  <button class="tab-btn" data-t="team"><span class="ico">&#128101;</span>Team</button>
+  <button class="tab-btn" data-t="actions"><span class="ico">&#9989;</span>Actions</button>
+  <button class="tab-btn" data-t="risk"><span class="ico">&#9888;&#65039;</span>Risks</button>
+  <button class="tab-btn" data-t="decide"><span class="ico">&#10067;</span>Matt</button>
+</nav>
+
+<main class="main">
+
+<!-- TIMELINE -->
+<div class="panel active" id="p-timeline">
+  <section>
+    <h2>Timeline &amp; Milestones</h2>
+    <div class="tl">
+      <div class="ti done"><div class="td">Apr 4</div><div class="tt">Google Drive setup + share</div><div class="to">Tyler <span class="b b-done">Done</span></div></div>
+      <div class="ti done"><div class="td">Apr 4-14</div><div class="tt">Tyler vacation</div><div class="to"><span class="b b-done">Done</span></div></div>
+      <div class="ti"><div class="td">Apr 16</div><div class="tt">Virtual sync &mdash; Decision Board review</div><div class="to">Tyler + Matt + Jackie + Sophia <span class="b b-up">Next</span></div></div>
+      <div class="ti"><div class="td">Apr 18</div><div class="tt">Sponsor commitment letters distributed</div><div class="to">Matt <span class="b b-pend">Pending</span></div></div>
+      <div class="ti"><div class="td">Apr 25</div><div class="tt">Waypoint written confirmation due</div><div class="to">Matt &rarr; Billy Haywood <span class="b b-pend">Pending</span></div></div>
+      <div class="ti"><div class="td">May 4</div><div class="tt">In-person meeting at USNA</div><div class="to">All <span class="b b-up">Upcoming</span></div></div>
+      <div class="ti"><div class="td">May 10</div><div class="tt">Speaker photos collected</div><div class="to">Sophia <span class="b b-pend">Pending</span></div></div>
+      <div class="ti"><div class="td">May 11</div><div class="tt">Weekly update #1 + sponsor reminder</div><div class="to">Tyler <span class="b b-up">Upcoming</span></div></div>
+      <div class="ti"><div class="td">May 18</div><div class="tt">Weekly update #2 + &ldquo;2 weeks to deadline&rdquo;</div><div class="to">Tyler <span class="b b-up">Upcoming</span></div></div>
+      <div class="ti"><div class="td">May 23</div><div class="tt">Attendee pre-count from Isaac</div><div class="to">Isaac &rarr; Jackie <span class="b b-pend">Pending</span></div></div>
+      <div class="ti ms"><div class="td">May 25</div><div class="tt">SOFT DEADLINE &mdash; 95% sponsors + roster</div><div class="to">Matt <span class="b b-crit">Deadline</span></div></div>
+      <div class="ti ms"><div class="td">June 1</div><div class="tt">HARD DEADLINE &mdash; all logos, names, roster lock</div><div class="to">Matt &rarr; Jackie <span class="b b-crit">Deadline</span></div></div>
+      <div class="ti"><div class="td">June 2</div><div class="tt">Badge + banner order placed (Ace Displays)</div><div class="to">Jackie <span class="b b-pend">Pending</span></div></div>
+      <div class="ti"><div class="td">June 8</div><div class="tt">QR code verification gate</div><div class="to">Jackie + Sophia <span class="b b-pend">Pending</span></div></div>
+      <div class="ti"><div class="td">June 10</div><div class="tt">Print program to printer; digital finalized</div><div class="to">Jackie / Sophia <span class="b b-up">Upcoming</span></div></div>
+      <div class="ti"><div class="td">June 15</div><div class="tt">Staging day &mdash; materials to Flugal</div><div class="to">Tyler / Jackie <span class="b b-up">Upcoming</span></div></div>
+      <div class="ti"><div class="td">June 16</div><div class="tt">Setup at Flugal (if available)</div><div class="to">All <span class="b b-up">Upcoming</span></div></div>
+      <div class="ti ev"><div class="td">June 17</div><div class="tt">SUMMIT DAY 1</div><div class="to"><span class="b" style="background:#C5A55A33;color:#A8893E">Event</span></div></div>
+      <div class="ti ev"><div class="td">June 18</div><div class="tt">SUMMIT DAY 2</div><div class="to"><span class="b" style="background:#C5A55A33;color:#A8893E">Event</span></div></div>
+    </div>
+  </section>
+</div>
+
+<!-- DELIVERABLES -->
+<div class="panel" id="p-del">
+  <section>
+    <h2>Deliverables</h2>
+    <div class="del-grid">
+      <div class="card del">
+        <h3>1. Printed Program</h3>
+        <div class="dm">
+          <strong>Owner:</strong> Jackie (R) / Sophia (support)<br>
+          <strong>Status:</strong> <span class="b b-prog">Two-track active</span><br>
+          <strong>Deadline:</strong> June 10 to printer<br>
+          <strong>Deps:</strong> Cover image (Matt), speaker photos, sponsor logos
+          <div class="sub-tasks">
+            <div>&#8226; Cover direction needed from Matt by Apr 16</div>
+            <div>&#8226; Speaker photos by May 10 (Sophia gathering)</div>
+            <div>&#8226; QR dual-scan verification by June 8</div>
+            <div>&#8226; Max 2 proof rounds, 48hr review window</div>
+          </div>
+        </div>
+      </div>
+      <div class="card del">
+        <h3>2. Digital Program</h3>
+        <div class="dm">
+          <strong>Owner:</strong> Sophia (R) / Jackie (review)<br>
+          <strong>Status:</strong> <span class="b b-pend">Awaiting print layout</span><br>
+          <strong>Deadline:</strong> June 10<br>
+          <strong>Change:</strong> Removing attendee LinkedIn pages (Matt confirmed)
+          <div class="sub-tasks">
+            <div>&#8226; Format decision needed: PDF, Flipsnack, Issuu?</div>
+            <div>&#8226; Hosting/distribution method TBD</div>
+            <div>&#8226; Mirrors print minus 1 week buffer</div>
+          </div>
+        </div>
+      </div>
+      <div class="card del">
+        <h3>3. Badges</h3>
+        <div class="dm">
+          <strong>Owner:</strong> Jackie (design + order)<br>
+          <strong>Status:</strong> <span class="b b-pend">Pending roster</span><br>
+          <strong>Vendor:</strong> Ace Displays &bull; 10 biz day lead time<br>
+          <strong>Order deadline:</strong> June 2<br>
+          <strong>Ribbons:</strong> Speaker, Sponsor, Attendee + Entrepreneur (TBD)
+          <div class="sub-tasks">
+            <div>&#8226; Roster lock: June 1 (Isaac &rarr; Matt &rarr; Jackie)</div>
+            <div>&#8226; Order with 15% buffer for walk-ins</div>
+            <div>&#8226; Blank badges for late additions</div>
+            <div>&#8226; Lanyards: Wells Fargo (Matt confirming)</div>
+          </div>
+        </div>
+      </div>
+      <div class="card del">
+        <h3>4. Pop-Up Banners</h3>
+        <div class="dm">
+          <strong>Owner:</strong> Sophia (R) / Jackie (review)<br>
+          <strong>Status:</strong> <span class="b b-pend">Pending logos</span><br>
+          <strong>Vendor:</strong> Ace Displays<br>
+          <strong>Order deadline:</strong> June 2 (with badges)
+          <div class="sub-tasks">
+            <div>&#8226; Banner 1: Check-in &mdash; dates/logos update</div>
+            <div>&#8226; Banner 2: Pavilion &mdash; Waypoint branding stays</div>
+            <div>&#8226; Written Waypoint confirm needed by Apr 25</div>
+          </div>
+        </div>
+      </div>
+      <div class="card del">
+        <h3>5. Digital Signage</h3>
+        <div class="dm">
+          <strong>Owner:</strong> Sophia (R) / Jackie (review) + IT<br>
+          <strong>Status:</strong> <span class="b b-crit">Specs needed</span><br>
+          <strong>Deadline:</strong> June 10 files to Flugal IT
+          <div class="sub-tasks">
+            <div>&#8226; Screen specs from Bridgette &mdash; BLOCKING</div>
+            <div>&#8226; Vertical welcome + horizontal speaker display</div>
+            <div>&#8226; IT/AV operator confirmation by May 4</div>
+          </div>
+        </div>
+      </div>
+      <div class="card del" style="border-left-color:var(--gray-300)">
+        <h3>6. Table Signs <span class="b b-pend" style="margin-left:.3rem">TBD</span></h3>
+        <div class="dm">
+          <strong>Owner:</strong> Sophia (if in scope)<br>
+          <strong>Status:</strong> Awaiting Matt's decision<br>
+          <strong>Note:</strong> Printed in-house last year, stand-up sleeves. Not on Matt's list but Jackie flagged.
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- SPONSORS -->
+<div class="panel" id="p-sponsor">
+  <section>
+    <h2>Sponsors</h2>
+    <div class="card sp-card" style="margin-bottom:.75rem">
+      <div class="sp-name">Waypoint Ventures</div>
+      <div class="sp-detail">Contact: Billy Haywood (bh@waypointventures.com)</div>
+      <div class="sp-detail">Commitment: Entrepreneurs Pavilion Sponsor</div>
+      <div class="sp-detail">Logo: <span class="b b-pend">Pending</span> &bull; Status: <span class="b b-done">Confirmed returning</span></div>
+      <div class="sp-detail">Written confirmation needed by Apr 25</div>
+    </div>
+    <div class="card sp-card" style="margin-bottom:.75rem">
+      <div class="sp-name">Wells Fargo</div>
+      <div class="sp-detail">Contact: Matt handling</div>
+      <div class="sp-detail">Commitment: Lanyards</div>
+      <div class="sp-detail">Logo: <span class="b b-pend">Pending</span> &bull; Status: <span class="b b-prog">Outreach</span></div>
+      <div class="sp-detail">Process TBD: WF supplying vs. USNA ordering w/ WF branding</div>
+    </div>
+
+    <h3 style="font-size:.95rem;color:var(--navy);margin:1.25rem 0 .5rem">Outreach Cadence</h3>
+    <div class="card cad">
+      <div class="step"><div class="s-date">Apr 18</div><div class="s-txt">Commitment letters out with tiered deadlines</div></div>
+      <div class="step"><div class="s-date">Apr 25</div><div class="s-txt">Follow-up on unsigned letters</div></div>
+      <div class="step"><div class="s-date">May 2</div><div class="s-txt">Asset request to confirmed sponsors (logo specs, copy)</div></div>
+      <div class="step"><div class="s-date">May 9</div><div class="s-txt">First asset reminder &mdash; 14 days to print deadline</div></div>
+      <div class="step"><div class="s-date">May 16</div><div class="s-txt">Final reminder &mdash; 7 days to print deadline</div></div>
+      <div class="step"><div class="s-date">May 23</div><div class="s-txt"><strong style="color:var(--red)">PRINT CUTOFF</strong> &mdash; missing sponsors excluded from print</div></div>
+      <div class="step"><div class="s-date">May 24</div><div class="s-txt">Digital-only request for sponsors who missed print</div></div>
+      <div class="step"><div class="s-date">Jun 1</div><div class="s-txt"><strong style="color:var(--red)">DIGITAL CUTOFF</strong> &mdash; final lock, no exceptions</div></div>
+    </div>
+    <p style="margin-top:.75rem;font-size:.78rem;color:var(--gray-500)">Logo specs: 300 DPI minimum, PNG or SVG. No website screenshots.</p>
+  </section>
+</div>
+
+<!-- TEAM -->
+<div class="panel" id="p-team">
+  <section>
+    <h2>Team &amp; Contacts</h2>
+    <div class="team-grid" id="tg"></div>
+  </section>
+</div>
+
+<!-- ACTIONS -->
+<div class="panel" id="p-actions">
+  <section>
+    <h2>Action Items</h2>
+    <div class="card" style="padding:.5rem 1rem" id="al"></div>
+  </section>
+</div>
+
+<!-- RISKS -->
+<div class="panel" id="p-risk">
+  <section>
+    <h2>Risk Register</h2>
+
+    <div class="dz">
+      <h3>&#9888; Danger Zone: May 25 &mdash; June 2</h3>
+      <p>This 8-day window has the highest risk convergence. Matt is accountable for 5+ parallel inputs simultaneously.</p>
+      <ul>
+        <li><strong>May 25:</strong> Soft sponsor deadline &mdash; 95% of logos should be in</li>
+        <li><strong>May 25:</strong> Badge proof lands for Matt's 48hr review</li>
+        <li><strong>June 1:</strong> Hard deadline: ALL sponsor logos + commitments</li>
+        <li><strong>June 1:</strong> Final attendee roster locked (Isaac &rarr; Matt &rarr; Jackie)</li>
+        <li><strong>June 2:</strong> Badge + banner order placed (Ace Displays)</li>
+      </ul>
+      <p style="margin-top:.5rem;font-weight:600;color:var(--red)">Matt: block this window. No travel, daily email access, 48hr proof turnaround.</p>
+    </div>
+
+    <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.75rem">Tap a risk to expand mitigation details.</p>
+    <div id="rl"></div>
+  </section>
+</div>
+
+<!-- DECISIONS FOR MATT -->
+<div class="panel" id="p-decide">
+  <section>
+    <h2>Decisions for Matt</h2>
+    <p style="font-size:.78rem;color:var(--gray-500);margin-bottom:.75rem">10 items requiring Matt Willmann's input. Deadlines shown in red.</p>
+    <div id="dl"></div>
+  </section>
+</div>
+
+</main>
+
+<footer class="footer">
+  <strong>USNA Entrepreneur Summit 2026</strong> &mdash; Project Tracker<br>
+  Prepared by Victory Square Partners<br>
+  <span style="font-size:.65rem">Last updated: <span id="lu"></span></span>
+</footer>
+
+<script>
+// Countdown
+!function(){const s=new Date('2026-06-17T08:00:00-04:00');function u(){const d=Math.ceil((s-new Date())/(864e5));document.getElementById('cd').textContent=d>0?d:'0'}u();setInterval(u,6e4)}();
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('p-'+b.dataset.t).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+// Team
+const team=[
+  {n:'Matt Willmann',i:'MW',r:'Founder & ED, USNA Entrepreneurs',e:'matt@usnaentrepreneurs.com',d:'Overall lead. Sponsor relationships, content decisions. Accountable on 15+ sub-tasks.'},
+  {n:'Tyler Goble',i:'TG',r:'VSP Partner, Coordinator',e:'tyler.goble@vspartners.us',d:'Google Drive, timeline, design review, logistics. Class of 2016.'},
+  {n:'Jackie Furton',i:'JF',r:'Art Director, USNA Alumni Assoc',e:'Jackie.Furton@usna.com',d:'Design lead. Print production, vendor mgmt (Ace Displays). 26 years experience.'},
+  {n:'Sophia Smith',i:'SS',r:'Creative Coordinator',e:'sophia.smith@usna.com',d:'Design execution, proofs. 6 months in, first summit. JMU grad.'},
+  {n:'Isaac Phillips III',i:'IP',r:'Data Support',e:'isaac.phillips@usna.com',d:'Attendee roster data. Needs briefing on format + June 1 deadline.'},
+  {n:'Bridgette Lundfelt',i:'BL',r:'Events Manager, Flugal Center',e:'bridgette.lundfelt@usna.com',d:'Venue logistics, AV, setup. Screen specs needed from her.'},
+  {n:'John Schofield',i:'JS',r:'Stakeholder / Observer',e:'john.schofield@usna.com',d:'Observer role. Approval authority TBD.'},
+  {n:'Matthew Walnock',i:'MN',r:'VSP Team',e:'matthew.walnock@vspartners.us',d:'Support (tentative hold). Attendance TBD.'}
+];
+const tg=document.getElementById('tg');
+team.forEach(t=>{tg.innerHTML+=`<div class="card tc"><div class="av">${t.i}</div><div class="ti-info"><h3>${t.n}</h3><div class="role">${t.r}</div><div class="email"><a href="mailto:${t.e}">${t.e}</a></div><div class="desc">${t.d}</div></div></div>`});
+
+// Actions
+const actions=[
+  {t:'Set up Google Drive, share with all stakeholders',o:'Tyler',d:'Apr 4',s:'done'},
+  {t:'Upload 2025 ZIP assets to Google Drive',o:'Jackie / Sophia',d:'Apr 4-7',s:'prog'},
+  {t:'Reach out to Billy Haywood (Waypoint)',o:'Tyler',d:'ASAP',s:'done'},
+  {t:'Reach out to Wells Fargo re: lanyards',o:'Matt',d:'ASAP',s:'prog'},
+  {t:'Confirm Flugal availability June 16 for setup',o:'Bridgette',d:'TBD',s:'pend'},
+  {t:'Decide: "Entrepreneur" ribbon category?',o:'Matt',d:'Apr 16',s:'pend'},
+  {t:'Clarify: table signs in scope for 2026?',o:'Matt',d:'Apr 16',s:'pend'},
+  {t:'Send sponsor commitment letters + logo specs',o:'Matt',d:'Apr 18',s:'pend'},
+  {t:'Schedule April 16 virtual sync',o:'Tyler',d:'Apr 14',s:'pend'},
+  {t:'Schedule May 4 in-person at USNA',o:'Tyler',d:'Apr 14',s:'pend'},
+  {t:'Brief Isaac on roster format + June 1 deadline',o:'Matt',d:'Apr 25',s:'pend'},
+  {t:'Get screen specs from Bridgette for digital signage',o:'Tyler',d:'Apr 16',s:'pend'}
+];
+const sm={done:'b-done',prog:'b-prog',pend:'b-pend'},sl={done:'Done',prog:'In Progress',pend:'Pending'};
+const al=document.getElementById('al');
+actions.forEach((a,i)=>{al.innerHTML+=`<div class="ai"><div class="ai-n">${i+1}</div><div class="ai-b"><div class="ai-t">${a.t}</div><div class="ai-m">${a.o} &bull; ${a.d} &bull; <span class="b ${sm[a.s]}">${sl[a.s]}</span></div></div></div>`});
+
+// Risks
+const risks=[
+  {s:'critical',t:'Sponsor commitments arriving after June 1',m:'Enforce hard deadline. Weekly reminders starting May 11. Blank badges for latecomers. Matt makes direct calls to non-responders by May 23.'},
+  {s:'critical',t:'Badge/banner order missed due to late roster',m:'June 2 is the absolute last day to place the Ace Displays order. Matt must sign off on roster by June 1 noon ET. If unresponsive, Tyler calls directly.'},
+  {s:'high',t:'Low-resolution logo submissions',m:'Logo spec sheet (300 DPI, PNG/SVG) included in every commitment letter. Jackie reviews all logos on receipt. Rejects sent back same day.'},
+  {s:'high',t:"Sophia's learning curve (first summit)",m:'Jackie mentoring. Sophia owns lower-risk deliverables (digital signage, table signs). Built-in review checkpoints on everything.'},
+  {s:'high',t:'Tyler vacation gap (Apr 4-14)',m:'Google Drive set up before departure. Christine (VSP) covers gap. Matt briefed with full decision document.'},
+  {s:'high',t:'Table signs falling through the cracks',m:'Binary decision from Matt by Apr 16. Either in scope (Sophia owns) or explicitly dropped. No "maybe."'},
+  {s:'medium',t:'QR code accuracy (2025 incident)',m:'Dual-scan verification: Jackie + Sophia independently scan every QR on separate devices. Log verified URLs in Drive. No file to vendor without QR sign-off.'},
+  {s:'medium',t:'Flugal Center June 16 setup blocked',m:'Bridgette confirms availability early. Backup: June 17 early morning setup (7 AM arrival).'},
+  {s:'low',t:'Google Drive adoption resistance',m:'Zero-friction onboarding. Direct folder links. Gentle reinforcement when files arrive via email. By May 4, Drive is established norm.'}
+];
+const rl=document.getElementById('rl');
+risks.forEach(r=>{rl.innerHTML+=`<div class="card rc ${r.s}" onclick="this.classList.toggle('open')"><div class="rh"><div><span class="b b-${r.s}">${r.s}</span><span class="rt">${r.t}</span></div><span class="chv">&#9660;</span></div><div class="rb"><strong>Mitigation:</strong> ${r.m}</div></div>`});
+
+// Decisions
+const dec=[
+  {q:'Table signs: in or out of scope?',d:'Jackie flagged these from 2025. Sophia\'s workload depends on this.',dl:'APR 16',rec:'Yes or No \u2014 "maybe" burns the most time.'},
+  {q:'Entrepreneur ribbon for pavilion presenters?',d:'Ribbons require a separate badge accessory order. Low incremental cost.',dl:'APR 16',rec:'Yes \u2014 visually elevates presenters.'},
+  {q:'Cover image direction for printed program?',d:'Longest-lead creative element. Jackie cannot start cover without direction.',dl:'APR 16',rec:'Approve a comp or provide reference image.'},
+  {q:'When do sponsor commitment letters go out?',d:'Anchors the entire 8-step outreach cadence.',dl:'APR 16',rec:'Approve language at sync, send Apr 18.'},
+  {q:'Acknowledge tiered deadline framework?',d:'Team needs your explicit sign-off that you\'ll enforce May 23 / Jun 1 / Jun 10.',dl:'APR 16',rec:'Verbal "yes, I\'ll enforce" at sync.'},
+  {q:'Accept 72hr auto-approval rule for proofs?',d:'If no response within 72hr, team proceeds. Protects you from being the blocker.',dl:'APR 16',rec:'Accept \u2014 deadline stated in every proof email.'},
+  {q:'Confirm Waypoint sponsorship in writing?',d:'Need written confirmation to lock tier + logo placement. Verbal is not enough.',dl:'APR 25',rec:'One-sentence email to Billy, CC Tyler.'},
+  {q:'Wells Fargo lanyard process?',d:'Two scenarios: WF supplies lanyards OR USNA orders w/ WF branding. Different workflows.',dl:'APR 25',rec:'Confirm with WF contact, relay answer.'},
+  {q:'Brief Isaac on roster format + deadline?',d:'Isaac needs required fields (name, title, org, ribbon category) and the June 1 hard lock.',dl:'APR 25',rec:'Brief directly or loop Tyler in.'},
+  {q:'Is Matthew Walnock attending?',d:'Affects badge count. Every confirmed attendee must be in roster before June 1.',dl:'MAY 15',rec:'Confirm yes or no.'}
+];
+const dl=document.getElementById('dl');
+dec.forEach((d,i)=>{dl.innerHTML+=`<div class="card dc"><h3><span class="dn">${i+1}</span>${d.q}</h3><p>${d.d}</p><p style="font-size:.75rem;color:var(--gray-500);margin-top:.2rem"><strong>Rec:</strong> ${d.rec}</p><div class="deadline">Deadline: ${d.dl}</div></div>`});
+
+// Last updated
+document.getElementById('lu').textContent=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'});
+</script>
+</body>
+</html>
