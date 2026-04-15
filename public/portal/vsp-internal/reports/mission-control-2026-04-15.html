@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Control — 2026-04-15</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17; --card: #141925; --border: #1e293b;
+  --green: #10b981; --blue: #3b82f6; --amber: #f59e0b;
+  --red: #ef4444; --purple: #8b5cf6; --text: #e2e8f0;
+  --muted: #94a3b8; --dim: #64748b;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+.header { padding:1.5rem 2rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
+.header h1 { font-size:1.4rem; font-weight:800; letter-spacing:-.02em; }
+.header .meta { color:var(--muted); font-size:.85rem; display:flex; gap:1rem; flex-wrap:wrap; }
+.tabs { display:flex; flex-wrap:wrap; gap:.3rem; padding:.75rem 1rem; background:#0d1220; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; overflow-x:auto; }
+.tab-btn { display:flex; align-items:center; gap:.35rem; padding:.45rem .85rem; border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--muted); font-size:.8rem; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer; white-space:nowrap; transition:all .15s; }
+.tab-btn:hover { background:rgba(255,255,255,.05); color:var(--text); }
+.tab-btn.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+.tab-section-label { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--dim); padding:.45rem .5rem; align-self:center; white-space:nowrap; }
+.content { max-width:1100px; margin:0 auto; padding:2rem; }
+.panel { display:none; }
+.panel.active { display:block; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:1.25rem; }
+.card-title { font-size:1rem; font-weight:700; margin-bottom:1rem; display:flex; align-items:center; gap:.5rem; }
+.card-sm { padding:1rem 1.25rem; }
+.section-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); margin-bottom:.75rem; }
+.stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1rem; margin-bottom:1.25rem; }
+.stat-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1rem 1.25rem; }
+.stat-val { font-size:2rem; font-weight:800; line-height:1; }
+.stat-label { font-size:.75rem; color:var(--muted); margin-top:.25rem; }
+.timeline { display:flex; flex-direction:column; gap:.5rem; }
+.tl-row { display:grid; grid-template-columns:80px 1fr 110px 80px; gap:.75rem; align-items:center; padding:.6rem .75rem; border-radius:8px; background:rgba(255,255,255,.02); border:1px solid var(--border); font-size:.85rem; }
+.tl-time { font-weight:700; color:var(--muted); font-size:.8rem; white-space:nowrap; }
+.tl-name { font-weight:600; }
+.tl-dur { color:var(--dim); font-size:.78rem; text-align:right; }
+.tl-cat { font-size:.72rem; }
+.alert { display:flex; align-items:flex-start; gap:.75rem; padding:.75rem 1rem; border-radius:8px; margin-bottom:.6rem; font-size:.85rem; }
+.alert-critical { background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.25); }
+.alert-warn { background:rgba(245,158,11,.07); border:1px solid rgba(245,158,11,.2); }
+.alert-info { background:rgba(59,130,246,.07); border:1px solid rgba(59,130,246,.2); }
+.alert-icon { font-size:1rem; margin-top:.05rem; flex-shrink:0; }
+.priority-item { display:flex; align-items:flex-start; gap:.75rem; padding:.75rem 0; border-bottom:1px solid var(--border); }
+.priority-item:last-child { border-bottom:none; }
+.priority-num { width:24px; height:24px; border-radius:50%; background:var(--blue); color:#fff; font-size:.75rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:.1rem; }
+.priority-text { font-size:.87rem; }
+.pipeline-table { width:100%; border-collapse:collapse; font-size:.85rem; }
+.pipeline-table th { text-align:left; color:var(--dim); font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; padding:.5rem .75rem; border-bottom:1px solid var(--border); }
+.pipeline-table td { padding:.6rem .75rem; border-bottom:1px solid rgba(30,41,59,.5); }
+.pipeline-table tr:last-child td { border-bottom:none; }
+.prospect-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1rem; }
+.prospect-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1.25rem; }
+.prospect-name { font-weight:700; font-size:.95rem; margin-bottom:.4rem; }
+.prospect-meta { font-size:.78rem; color:var(--muted); margin-bottom:.75rem; }
+.meddpic-row { display:flex; align-items:center; gap:.75rem; margin:.4rem 0; }
+.meddpic-label { font-size:.72rem; color:var(--dim); width:90px; flex-shrink:0; }
+.scorecard-row { display:flex; align-items:center; gap:1rem; padding:.6rem 0; border-bottom:1px solid var(--border); }
+.scorecard-row:last-child { border-bottom:none; }
+.scorecard-label { width:130px; font-size:.85rem; flex-shrink:0; }
+.scorecard-bar-wrap { flex:1; background:rgba(255,255,255,.05); border-radius:4px; height:8px; overflow:hidden; }
+.scorecard-bar { height:100%; border-radius:4px; }
+.scorecard-pct { font-size:.8rem; color:var(--muted); width:45px; text-align:right; flex-shrink:0; }
+.scorecard-vals { font-size:.78rem; color:var(--dim); width:60px; flex-shrink:0; }
+.slack-item { padding:.6rem 0; border-bottom:1px solid var(--border); font-size:.85rem; }
+.slack-item:last-child { border-bottom:none; }
+.slack-channel { font-weight:600; color:var(--blue); font-size:.8rem; }
+.slack-text { margin-top:.2rem; color:var(--muted); }
+.inbox-row { display:flex; gap:1rem; }
+.inbox-box { flex:1; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1.25rem; text-align:center; }
+.inbox-num { font-size:2.5rem; font-weight:800; }
+.inbox-label { font-size:.8rem; color:var(--muted); margin-top:.25rem; }
+.meeting-header { margin-bottom:1.5rem; }
+.meeting-title { font-size:1.3rem; font-weight:800; margin-bottom:.4rem; }
+.meeting-badges { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.75rem; }
+.meeting-desc { font-size:.9rem; color:var(--muted); }
+.contacts-table { width:100%; border-collapse:collapse; font-size:.83rem; }
+.contacts-table th { text-align:left; color:var(--dim); font-size:.7rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; padding:.5rem .75rem; border-bottom:1px solid var(--border); }
+.contacts-table td { padding:.55rem .75rem; border-bottom:1px solid rgba(30,41,59,.5); vertical-align:top; }
+.contacts-table tr:last-child td { border-bottom:none; }
+.agenda-table { width:100%; border-collapse:collapse; font-size:.83rem; }
+.agenda-table td { padding:.5rem .75rem; border-bottom:1px solid rgba(30,41,59,.4); vertical-align:top; }
+.agenda-table td:first-child { width:90px; font-weight:700; color:var(--muted); white-space:nowrap; }
+.agenda-table tr:last-child td { border-bottom:none; }
+.tp-item { padding:.6rem .75rem; border-radius:8px; background:rgba(255,255,255,.02); border-left:3px solid var(--blue); margin-bottom:.6rem; font-size:.83rem; }
+.tp-if { font-weight:700; color:var(--blue); font-size:.75rem; margin-bottom:.2rem; }
+.rf-item { display:flex; gap:.6rem; align-items:flex-start; padding:.5rem 0; border-bottom:1px solid var(--border); font-size:.83rem; }
+.rf-item:last-child { border-bottom:none; }
+.rf-icon { flex-shrink:0; }
+.dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+.dot-grey { background:var(--dim); }
+.dot-blue { background:var(--blue); }
+.dot-green { background:var(--green); }
+.dot-amber { background:var(--amber); }
+.pulse { animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.join-btn { display:inline-block; margin-top:.75rem; padding:.5rem 1.25rem; background:var(--blue); color:#fff; border-radius:8px; font-weight:600; font-size:.85rem; text-decoration:none; }
+.join-btn:hover { background:#2563eb; }
+.tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:.75rem; font-weight:600; }
+.tag-blue { background:rgba(59,130,246,.15); color:var(--blue); }
+.tag-green { background:rgba(16,185,129,.15); color:var(--green); }
+.tag-amber { background:rgba(245,158,11,.15); color:var(--amber); }
+.tag-red { background:rgba(239,68,68,.15); color:var(--red); }
+.tag-grey { background:rgba(100,116,139,.15); color:var(--dim); }
+.tag-purple { background:rgba(139,92,246,.15); color:var(--purple); }
+.divider { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+@media(max-width:768px) {
+  .content { padding:1rem; }
+  .stats-row { grid-template-columns:repeat(2,1fr); }
+  .tl-row { grid-template-columns:70px 1fr; }
+  .tl-dur, .tl-cat { display:none; }
+  .two-col { grid-template-columns:1fr; }
+  .three-col { grid-template-columns:1fr; }
+  .prospect-grid { grid-template-columns:1fr; }
+  .header { padding:1rem; }
+  .tabs { padding:.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Mission Control — April 15, 2026</h1>
+  <div class="meta">
+    <span>Tyler Goble</span>
+    <span>Victory Square Partners</span>
+    <span>7 meetings today</span>
+  </div>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab-btn active" onclick="showTab(0)">Overview</div>
+  <span class="tab-section-label">TODAY</span>
+  <div class="tab-btn" onclick="showTab(1)"><span class="dot dot-grey"></span>7:00 — Standup</div>
+  <div class="tab-btn" onclick="showTab(2)"><span class="dot dot-grey"></span>7:30 — Sphere Huddle</div>
+  <div class="tab-btn" onclick="showTab(3)"><span class="dot dot-amber pulse"></span>8:00 — Sphere x Rosario</div>
+  <div class="tab-btn" onclick="showTab(4)"><span class="dot dot-blue"></span>9:00 — FDM Standup</div>
+  <div class="tab-btn" onclick="showTab(5)"><span class="dot dot-green pulse"></span>9:15 — brAIN / Sherman</div>
+  <div class="tab-btn" onclick="showTab(6)"><span class="dot dot-grey"></span>9:30 — Sales SOB</div>
+  <div class="tab-btn" onclick="showTab(7)"><span class="dot dot-blue"></span>10:30 — SixMap Standup</div>
+</div>
+
+<div class="content">
+
+<!-- ==================== PANEL 0: OVERVIEW ==================== -->
+<div class="panel active" id="panel-0">
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-val">7</div>
+    <div class="stat-label">Meetings Today</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">4</div>
+    <div class="stat-label">Recurring</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val">3</div>
+    <div class="stat-label">New / External</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" style="color:var(--green)">2</div>
+    <div class="stat-label">Prep Needed</div>
+  </div>
+</div>
+
+<!-- Critical Alerts -->
+<div class="card">
+  <div class="card-title">Critical Alerts</div>
+  <div class="alert alert-critical">
+    <span class="alert-icon">!!</span>
+    <div><strong>Pipeline coverage 0.12x</strong> — severely below 3.0x target. $2.8M pipeline against $6.7M goal. 14 deals at $0 value (investor/networking stage).</div>
+  </div>
+  <div class="alert alert-critical">
+    <span class="alert-icon">!!</span>
+    <div><strong>7 overdue deals ($1.58M)</strong> — SixMap SOW2 (105d), FDM SOW#2 (79d), ClaimInformatics SOW2+3 (14d each), Bear Analytics (5d), Ad Impact SOW8 (23d), Meetingz (32d).</div>
+  </div>
+  <div class="alert alert-warn">
+    <span class="alert-icon">--</span>
+    <div><strong>Action items stale</strong> — 56 open items, last updated March 3. Morning ops haven't run in 42 days.</div>
+  </div>
+  <div class="alert alert-warn">
+    <span class="alert-icon">--</span>
+    <div><strong>12 deals missing linked contacts</strong> in Pipedrive. 38 of 45 deals lack MEDDPIC trackers.</div>
+  </div>
+</div>
+
+<!-- Top 3 Priorities -->
+<div class="card">
+  <div class="card-title">Top 3 Priorities</div>
+  <div class="priority-item">
+    <div class="priority-num">1</div>
+    <div class="priority-text"><strong>Sphere x Rosario at 8:00 AM</strong> — $405K deal, board decision April 28. Andrei Secea's first call. Matt prepped full scoping doc overnight. This call makes or breaks the deal.</div>
+  </div>
+  <div class="priority-item">
+    <div class="priority-num">2</div>
+    <div class="priority-text"><strong>brAIN / Sherman sync at 9:15 AM</strong> — Status update on brAIN platform. Backlog was 3 pages as of April 10. New dev hired — scope overlap risk. Probe expansion/retainer.</div>
+  </div>
+  <div class="priority-item">
+    <div class="priority-num">3</div>
+    <div class="priority-text"><strong>Slack response needed</strong> — Paul asked about YourHealthPro P0 status yesterday 5:30 PM, no reply. Also: Arc Integrated needs scoping action triggered.</div>
+  </div>
+</div>
+
+<!-- Day at a Glance -->
+<div class="card">
+  <div class="card-title">Day at a Glance</div>
+  <div class="timeline">
+    <div class="tl-row">
+      <div class="tl-time">7:00 AM</div>
+      <div class="tl-name">Tyler &lt;&gt; Christine Stand Up</div>
+      <div class="tl-cat"><span class="tag tag-grey">STANDUP</span></div>
+      <div class="tl-dur">15 min</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-time">7:30 AM</div>
+      <div class="tl-name">Sphere Huddle (pre-call w/ Matt, Paul, Andrei)</div>
+      <div class="tl-cat"><span class="tag tag-grey">INTERNAL</span></div>
+      <div class="tl-dur">30 min</div>
+    </div>
+    <div class="tl-row" style="background:rgba(245,158,11,.06); border-color:rgba(245,158,11,.3);">
+      <div class="tl-time" style="color:var(--amber)">8:00 AM</div>
+      <div class="tl-name" style="color:var(--amber)">Sphere &lt;&gt; VSP — Rosario Follow-Up Questions</div>
+      <div class="tl-cat"><span class="tag tag-amber">EXTERNAL</span></div>
+      <div class="tl-dur">60 min</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-time">9:00 AM</div>
+      <div class="tl-name">FDM Stand Up (Liviu, Kyle, Matt, Nils, Dorel)</div>
+      <div class="tl-cat"><span class="tag tag-blue">CLIENT</span></div>
+      <div class="tl-dur">15 min</div>
+    </div>
+    <div class="tl-row" style="background:rgba(16,185,129,.06); border-color:rgba(16,185,129,.3);">
+      <div class="tl-time" style="color:var(--green)">9:15 AM</div>
+      <div class="tl-name" style="color:var(--green)">Tyler / Sherman brAIN Sync</div>
+      <div class="tl-cat"><span class="tag tag-green">PROSPECT</span></div>
+      <div class="tl-dur">30 min</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-time">9:30 AM</div>
+      <div class="tl-name">Sales, Advisory &amp; Marketing SOB</div>
+      <div class="tl-cat"><span class="tag tag-grey">INTERNAL</span></div>
+      <div class="tl-dur">90 min</div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-time">10:30 AM</div>
+      <div class="tl-name">SixMap &lt;&gt; VictorySquare Stand-up</div>
+      <div class="tl-cat"><span class="tag tag-blue">CLIENT</span></div>
+      <div class="tl-dur">30 min</div>
+    </div>
+  </div>
+</div>
+
+<!-- Pipeline Snapshot -->
+<div class="card">
+  <div class="card-title">Pipeline Snapshot</div>
+  <table class="pipeline-table">
+    <tr><th>Stage</th><th>Deals</th><th>Value</th><th>Notes</th></tr>
+    <tr><td>Committed</td><td>6</td><td>$1,223,194</td><td>FDM, SixMap, ClaimInformatics x2, Meetingz, CI SOW1</td></tr>
+    <tr><td>Proposed</td><td>4</td><td>$430,000</td><td>Epidaurus, Pryze, Ripple, Bear Analytics</td></tr>
+    <tr><td>Discovered</td><td>5</td><td>$510,000</td><td>DRB, PBS, PaleoTech, PreciseTarget, Better Earth</td></tr>
+    <tr><td>Discovery</td><td>1</td><td>$405,000</td><td style="color:var(--amber)">SPHERE SOW 1 (board vote Apr 28)</td></tr>
+    <tr><td>Engaged</td><td>5</td><td>$197,940</td><td>PayGround, Ad Impact x3, SixMap 2.2</td></tr>
+    <tr><td>Investor Pipeline</td><td>14</td><td>$0</td><td>Networking/relationship stage</td></tr>
+    <tr><td>Other</td><td>10</td><td>$57,100</td><td>Advisory, SDD, expansions</td></tr>
+  </table>
+  <div style="margin-top:1rem; padding:.75rem 1rem; background:rgba(239,68,68,.06); border:1px solid rgba(239,68,68,.2); border-radius:8px; font-size:.83rem;">
+    <strong style="color:var(--red)">Coverage: 0.12x</strong> — Target is 3.0x minimum. Pipeline needs significant value additions to reach healthy coverage.
+  </div>
+</div>
+
+<!-- MEDDPIC Tracker -->
+<div class="card">
+  <div class="card-title">MEDDPIC — Top Prospects</div>
+  <div class="prospect-grid">
+    <div class="prospect-card" style="border-left:3px solid var(--green);">
+      <div class="prospect-name">Pryze</div>
+      <div class="prospect-meta">PROPOSAL | $19K-23K/mo | 6S/1M</div>
+      <div class="meddpic-row"><span class="meddpic-label">Champion</span><span class="tag tag-green">STRONG</span> <span style="font-size:.8rem;color:var(--muted)">"I trust your technical judgment"</span></div>
+    </div>
+    <div class="prospect-card" style="border-left:3px solid var(--green);">
+      <div class="prospect-name">PBS</div>
+      <div class="prospect-meta">DISCOVERY (Late) | $50K-150K/mo | 5S/2M/1W</div>
+      <div class="meddpic-row"><span class="meddpic-label">Approach</span><span class="tag tag-green">STRONG</span> <span style="font-size:.8rem;color:var(--muted)">MSA-first, 6 engagement vectors</span></div>
+    </div>
+    <div class="prospect-card" style="border-left:3px solid var(--green);">
+      <div class="prospect-name">E-Show</div>
+      <div class="prospect-meta">DISCOVERY (Late) | $15K-75K/mo | 4S/2M/1W</div>
+      <div class="meddpic-row"><span class="meddpic-label">Pain</span><span class="tag tag-green">STRONG</span> <span style="font-size:.8rem;color:var(--muted)">21yr ColdFusion monolith</span></div>
+    </div>
+    <div class="prospect-card" style="border-left:3px solid var(--amber);">
+      <div class="prospect-name">SPHERE</div>
+      <div class="prospect-meta">DISCOVERY | $405K SOW | Board vote Apr 28</div>
+      <div class="meddpic-row"><span class="meddpic-label">Competition</span><span class="tag tag-red">WEAK</span> <span style="font-size:.8rem;color:var(--muted)">4 vendors, no intel</span></div>
+      <div class="meddpic-row"><span class="meddpic-label">Champion</span><span class="tag tag-amber">MODERATE</span> <span style="font-size:.8rem;color:var(--muted)">Rosario unqualified — today's goal</span></div>
+    </div>
+    <div class="prospect-card" style="border-left:3px solid var(--green);">
+      <div class="prospect-name">Ripple Operations</div>
+      <div class="prospect-meta">DISCOVERY | $7.5K-17K/mo | 4S/2M/1W</div>
+      <div class="meddpic-row"><span class="meddpic-label">Champion</span><span class="tag tag-green">STRONG</span> <span style="font-size:.8rem;color:var(--muted)">Kara Sasse (CEO) — Paul's friend</span></div>
+    </div>
+    <div class="prospect-card" style="border-left:3px solid var(--green);">
+      <div class="prospect-name">Epicutis</div>
+      <div class="prospect-meta">DISCOVERY | $15K-50K/mo | 3S/3M/1W</div>
+      <div class="meddpic-row"><span class="meddpic-label">Status</span><span class="tag tag-amber">STALE</span> <span style="font-size:.8rem;color:var(--muted)">Tyler: "needs to be revived"</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Activity Scorecard -->
+<div class="card">
+  <div class="card-title">Activity Scorecard <span style="font-size:.75rem;color:var(--dim);margin-left:.5rem">(Week of Mar 10-17 — stale)</span></div>
+  <div class="scorecard-row">
+    <div class="scorecard-label">Networking</div>
+    <div class="scorecard-bar-wrap"><div class="scorecard-bar" style="width:60%; background:var(--green);"></div></div>
+    <div class="scorecard-vals">3 / 5</div>
+    <div class="scorecard-pct">60%</div>
+  </div>
+  <div class="scorecard-row">
+    <div class="scorecard-label">Prospecting</div>
+    <div class="scorecard-bar-wrap"><div class="scorecard-bar" style="width:23%; background:var(--red);"></div></div>
+    <div class="scorecard-vals">14 / 60</div>
+    <div class="scorecard-pct">23%</div>
+  </div>
+  <div class="scorecard-row">
+    <div class="scorecard-label">Protecting</div>
+    <div class="scorecard-bar-wrap"><div class="scorecard-bar" style="width:40%; background:var(--amber);"></div></div>
+    <div class="scorecard-vals">2 / 5</div>
+    <div class="scorecard-pct">40%</div>
+  </div>
+  <div class="scorecard-row">
+    <div class="scorecard-label">Referring</div>
+    <div class="scorecard-bar-wrap"><div class="scorecard-bar" style="width:20%; background:var(--red);"></div></div>
+    <div class="scorecard-vals">3 / 15</div>
+    <div class="scorecard-pct">20%</div>
+  </div>
+</div>
+
+<!-- INBOX & Action Items -->
+<div class="inbox-row">
+  <div class="inbox-box">
+    <div class="inbox-num" style="color:var(--amber)">10</div>
+    <div class="inbox-label">INBOX Items</div>
+  </div>
+  <div class="inbox-box">
+    <div class="inbox-num" style="color:var(--red)">56</div>
+    <div class="inbox-label">Open Action Items (stale)</div>
+  </div>
+  <div class="inbox-box">
+    <div class="inbox-num">4</div>
+    <div class="inbox-label">New Circleback Meetings</div>
+  </div>
+</div>
+
+<!-- Slack Roundup -->
+<div class="card" style="margin-top:1.25rem;">
+  <div class="card-title">Slack Roundup</div>
+  <div class="section-label">HOT CHANNELS</div>
+  <div class="slack-item">
+    <div class="slack-channel">#prospect-sphere</div>
+    <div class="slack-text">Matt posted full 35KB scoping doc overnight. Andrei Secea added. Pre-call coordination for Rosario meeting at 8 AM.</div>
+  </div>
+  <div class="slack-item">
+    <div class="slack-channel">#prospect-arc-integrated</div>
+    <div class="slack-text">Paul revived yesterday — Michael's 4 criteria for dev partner discussed. Tyler + Paul aligned on next steps: bring in Matt/Vlad for estimation.</div>
+  </div>
+  <div class="slack-item">
+    <div class="slack-channel">#prospect-yourhealthpro</div>
+    <div class="slack-text" style="color:var(--amber)">Paul asked "Is P0 done? Wondering about P1 duration." at 5:30 PM yesterday — NO RESPONSE from Tyler yet.</div>
+  </div>
+  <div class="slack-item">
+    <div class="slack-channel">#prospect-softledger</div>
+    <div class="slack-text">Tyler joined Apr 13. Paul discussing SoftLedger &lt;&gt; Ramp doc with Geoff. Handing to Vlad/Delivery.</div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">MENTIONS NEEDING RESPONSE</div>
+  <div class="slack-item">
+    <div class="slack-channel">Contract Review Tracker</div>
+    <div class="slack-text" style="color:var(--amber)">Paul asked: "Tyler — remind me: how did we end up with $55 p/h?" (Apr 14 7:21 AM)</div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">UPCOMING</div>
+  <div class="slack-item">
+    <div class="slack-channel">#prospect-tebow-group</div>
+    <div class="slack-text">In-person meeting April 20 in Jacksonville — 5 days out, no prep visible in channel.</div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">QUIET (10+ DAYS)</div>
+  <div style="font-size:.83rem; color:var(--muted); padding:.5rem 0;">
+    e-show (33d) &middot; more-real-estate (28d) &middot; fdm-groupfinder (22d) &middot; elevare-law (15d) &middot; tebow-group (13d) &middot; bear-analytics (12d) &middot; temple-it (12d) &middot; pryze (9d) &middot; ripple (9d) &middot; epidaurus (9d) &middot; epicutis (8d) &middot; bw-cyber (8d) &middot; vico (51d) &middot; truthly-ai (68d) &middot; paleotechai (144d)
+  </div>
+</div>
+
+</div><!-- end panel-0 -->
+
+<!-- ==================== PANEL 1: Tyler <> Christine Standup ==================== -->
+<div class="panel" id="panel-1">
+  <div class="card" style="border-left:3px solid var(--dim);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
+      <div>
+        <div class="meeting-title">Tyler &lt;&gt; Christine Stand Up</div>
+        <div class="meeting-badges">
+          <span class="tag tag-grey">RECURRING</span>
+          <span class="tag tag-grey">STANDUP</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:1.4rem; font-weight:700;">7:00 AM</div>
+        <div style="color:var(--muted);">15 min &middot; 2 attendees</div>
+      </div>
+    </div>
+    <a href="https://meet.google.com/hfp-peay-mmz" class="join-btn" target="_blank">Join Meeting</a>
+  </div>
+  <div class="card">
+    <h4 style="margin-bottom:.75rem;">Last Time (Mar 30)</h4>
+    <ul style="padding-left:1.25rem; font-size:.87rem; color:var(--muted);">
+      <li>Christine taking Good Friday (Apr 3) off; payroll timing adjusted for bank holiday</li>
+      <li>Tyler traveling Apr 4-8 with Christine covering operations</li>
+      <li>Hiring pipeline: Chris and Angela closed; Emma, Dane, Martin active; Bud on pause</li>
+    </ul>
+    <div style="color:var(--dim); font-size:.72rem; margin-top:.75rem;">Source: 06_ARCHIVE/Meetings/Daily_Stand_Ups/2026-03-30_Tyler_Christine_Stand_Up.md</div>
+  </div>
+</div>
+
+<!-- ==================== PANEL 2: Sphere Huddle ==================== -->
+<div class="panel" id="panel-2">
+  <div class="card" style="border-left:3px solid var(--dim);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
+      <div>
+        <div class="meeting-title">Sphere Huddle (Pre-Call Sync)</div>
+        <div class="meeting-badges">
+          <span class="tag tag-grey">NEW</span>
+          <span class="tag tag-grey">INTERNAL</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:1.4rem; font-weight:700;">7:30 AM</div>
+        <div style="color:var(--muted);">30 min &middot; 5 attendees</div>
+      </div>
+    </div>
+    <a href="https://meet.google.com/ktn-qfzu-sio" class="join-btn" target="_blank">Join Meeting</a>
+  </div>
+  <div class="card">
+    <h4 style="margin-bottom:.5rem;">Context</h4>
+    <p style="font-size:.87rem; color:var(--muted);">Internal coordination before the 8:00 AM Rosario call. Matt Walnock, Paul Doman, Tyler, Andrei Secea, Vlad Damian. Align on Matt's scoping doc, assign question ownership, brief Andrei on deal context.</p>
+    <p style="font-size:.85rem; margin-top:.75rem; color:var(--amber);">See the <strong>Sphere x Rosario</strong> tab for the full prep package — use this huddle to divide and conquer.</p>
+  </div>
+</div>
+
+<!-- ==================== PANEL 3: Sphere x Rosario ==================== -->
+<div class="panel" id="panel-3">
+  <div class="card" style="border-left:3px solid var(--amber);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
+      <div>
+        <div class="meeting-title">SPHERE &lt;&gt; VSP — Rosario Follow-Up</div>
+        <div class="meeting-badges">
+          <span class="tag tag-amber">EXTERNAL</span>
+          <span class="tag tag-red">HIGH STAKES</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:1.4rem; font-weight:700;">8:00 AM</div>
+        <div style="color:var(--muted);">60 min &middot; 5 attendees</div>
+      </div>
+    </div>
+    <a href="https://meet.google.com/ggz-pjuj-keb" class="join-btn" target="_blank">Join Meeting</a>
+  </div>
+
+  <!-- Background -->
+  <div class="card">
+    <div class="card-title">Background</div>
+    <p style="font-size:.87rem;">SPHERE is rebuilding its platform ("SPHEREboard") into a modern multi-tenant SaaS on AWS with AI capabilities. CEO Rita Gurevich has made a <strong>6-month delivery commitment to her board</strong>, which meets ~April 28 to select a vendor. VSP is 1 of 4 vendors. The $405K SOW covers fractional CTO (Matt) + Romanian engineering pod.</p>
+    <p style="font-size:.87rem; margin-top:.75rem;">Paul sourced via Lenard at Edison Ventures. Apr 7 discovery with Rita went well. Matt spoke with Rosario Apr 9 — called him "smart guy" but noted gaps needing delivery-level discovery. Matt published the 00-starting-point.md scoping doc (35KB) overnight with 28 open questions and 18 assumptions.</p>
+  </div>
+
+  <!-- Key Contacts -->
+  <div class="card">
+    <div class="card-title">Key Contacts</div>
+    <table class="contacts-table">
+      <tr><th>Name</th><th>Role</th><th>Notes</th></tr>
+      <tr><td><strong>Rosario Mastrogiacomo</strong></td><td>de facto CTO</td><td>Technical gatekeeper. Matt: "smart guy, clear on bounds." Must convert to champion TODAY.</td></tr>
+      <tr><td>Rita Gurevich</td><td>CEO / Economic Buyer</td><td>Board-level urgency. Presenting vendor recommendation Apr 28. Not on this call.</td></tr>
+      <tr><td>Matt Walnock</td><td>VSP — Fractional CTO</td><td>Owns scoping doc. Prior relationship with Lenard. Leading delivery estimate.</td></tr>
+      <tr><td>Andrei Secea</td><td>VSP — Delivery Lead (NEW)</td><td>Just added yesterday. First call with Rosario. Introduce properly.</td></tr>
+      <tr><td>Paul Doman</td><td>VSP — Relationship</td><td>Sourced the deal. Sent NDA. Internal champion.</td></tr>
+    </table>
+  </div>
+
+  <!-- MEDDPIC -->
+  <div class="card">
+    <div class="card-title">MEDDPIC Status</div>
+    <div class="meddpic-row"><span class="meddpic-label">Metrics</span><span class="tag tag-amber">MODERATE</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">$405K SOW. Revenue blocked. Need cost-of-delay quantification.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Econ Buyer</span><span class="tag tag-green">STRONG</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">Rita — CEO, board decision authority.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Decision Criteria</span><span class="tag tag-amber">MODERATE</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">Multi-tenant SaaS, AI, fCTO model. 28 questions aim to close gaps.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Decision Process</span><span class="tag tag-amber">MODERATE</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">Rita leads commercial; Rosario is tech gatekeeper. Board vote Apr 28.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Paper Process</span><span class="tag tag-amber">WEAK &rarr; IMPROVING</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">NDA sent Apr 9. Confirm fully executed.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Identify Pain</span><span class="tag tag-green">STRONG</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">Platform not production-ready. Blocks revenue. Board commitment.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Champion</span><span class="tag tag-amber">MODERATE</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">Rita is EB+champion (single point of failure). Rosario = unknown.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Competition</span><span class="tag tag-red">WEAK</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">3 other vendors — zero intel on pricing or positioning.</span></div>
+  </div>
+
+  <!-- Key Questions -->
+  <div class="card">
+    <div class="card-title">Key Questions to Ask</div>
+    <ol style="padding-left:1.25rem; font-size:.87rem;">
+      <li style="margin-bottom:.5rem;"><strong>Champion:</strong> "Rosario — how are you personally evaluating the vendors? What would make you confident recommending one team over another to Rita?"</li>
+      <li style="margin-bottom:.5rem;"><strong>Competition:</strong> "What are the other vendors proposing in terms of approach — not names, but methodology?"</li>
+      <li style="margin-bottom:.5rem;"><strong>Paper Process:</strong> "Walk me through what happens between the April 28 decision and a signed contract — who else is involved?"</li>
+      <li style="margin-bottom:.5rem;"><strong>Metrics:</strong> "What's the cost to SPHERE if the platform isn't ready by [date]? Is there a specific revenue commitment riding on the timeline?"</li>
+      <li style="margin-bottom:.5rem;"><strong>Decision Criteria:</strong> "Of Matt's 28 open questions, which 3-5 are most critical for your evaluation?"</li>
+    </ol>
+  </div>
+
+  <!-- Suggested Agenda -->
+  <div class="card">
+    <div class="card-title">Suggested Agenda (60 min)</div>
+    <table class="agenda-table">
+      <tr><td>0-5 min</td><td>Welcome + introduce Andrei Secea as Delivery Lead</td></tr>
+      <tr><td>5-12 min</td><td>Rosario's role, day-to-day, what he owns vs. what VSP would own</td></tr>
+      <tr><td>12-25 min</td><td>Current platform deep-dive — architecture, tech debt, Scan Server boundary</td></tr>
+      <tr><td>25-40 min</td><td>Walk Section 9 open questions (ARCH, LOGIC, OPS, CUST, SAAS, PRIOR)</td></tr>
+      <tr><td>40-50 min</td><td>VSP approach — fCTO model, Andrei's pod, Phase Zero, timeline</td></tr>
+      <tr><td>50-57 min</td><td>Rosario's concerns, competitive evaluation discussion</td></tr>
+      <tr><td>57-60 min</td><td>Next steps — NDA status, estimate delivery date, path to Apr 28</td></tr>
+    </table>
+  </div>
+
+  <!-- Talking Points -->
+  <div class="card">
+    <div class="card-title">If They Say... / You Say...</div>
+    <div class="tp-item">
+      <div class="tp-if">IF: Rosario feels threatened by external CTO</div>
+      "The fractional CTO extends YOUR capacity, not replaces you. Matt is your technical sounding board. Andrei runs day-to-day delivery under your direction. You stay in the driver's seat."
+    </div>
+    <div class="tp-item">
+      <div class="tp-if">IF: "How do we know you can build this?"</div>
+      "Our Romanian team built SixMap's platform — HIPAA/SOC2, Angular migration, AI infrastructure. Andrei has led this kind of rebuild. We're not proposing theory — we're proposing a proven team."
+    </div>
+    <div class="tp-item">
+      <div class="tp-if">IF: Price feels high ($405K)</div>
+      "Phase Zero is fixed-price, 11-17 days. You get architecture docs, validated estimate, and proof-of-concept — and you can walk away after. It de-risks the full commitment."
+    </div>
+    <div class="tp-item">
+      <div class="tp-if">IF: Another vendor is ahead</div>
+      "We'd like to understand the comparison — the gap usually comes down to senior engineers vs. body count. We can be specific about exactly who is on your team and what Matt's involvement looks like week to week."
+    </div>
+  </div>
+
+  <!-- Red Flags -->
+  <div class="card" style="border-left:3px solid var(--red);">
+    <div class="card-title">Red Flags to Watch</div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--red)">!!</span><span>Rosario not on the call / joins late / disengages — means he's checked out on VSP</span></div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--red)">!!</span><span>Vague about other vendors — may mean incumbent preferred and VSP is a price check</span></div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--amber)">--</span><span>Pushback on fractional CTO model — territory concern, redirect to Andrei's delivery lead role</span></div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--amber)">--</span><span>NDA still not fully executed after 8 days — something upstream is wrong</span></div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--amber)">--</span><span>Never heard of the scoping doc — weak handoff from Rita, recalibrate by walking from scratch</span></div>
+  </div>
+
+  <!-- Success Criteria -->
+  <div class="card" style="border-left:3px solid var(--green);">
+    <div class="card-title">Success Criteria</div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--green)">&#10003;</span><span><strong>Minimum:</strong> Enough of Matt's 28 questions answered to produce credible estimate. No fundamental objection to model. Clear next step agreed.</span></div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--green)">&#10003;</span><span><strong>Full win:</strong> Rosario says he'll recommend VSP to Rita. Codebase access granted. NDA confirmed. Follow-up before Apr 28 agreed. Andrei-Rosario rapport established.</span></div>
+  </div>
+</div>
+
+<!-- ==================== PANEL 4: FDM Standup ==================== -->
+<div class="panel" id="panel-4">
+  <div class="card" style="border-left:3px solid var(--blue);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
+      <div>
+        <div class="meeting-title">FDM Stand Up</div>
+        <div class="meeting-badges">
+          <span class="tag tag-blue">RECURRING</span>
+          <span class="tag tag-blue">CLIENT</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:1.4rem; font-weight:700;">9:00 AM</div>
+        <div style="color:var(--muted);">15 min &middot; 6 attendees</div>
+      </div>
+    </div>
+    <a href="https://meet.google.com/ord-wsqb-fxy" class="join-btn" target="_blank">Join Meeting</a>
+  </div>
+  <div class="card">
+    <h4 style="margin-bottom:.75rem;">Last Time (Apr 7)</h4>
+    <ul style="padding-left:1.25rem; font-size:.87rem; color:var(--muted);">
+      <li>Kyle found 2 issues in conversation analytics: categories too broad + ETL stopped syncing message content after Oct 2024</li>
+      <li>Ionut confirmed ETL gap is likely a failed backfill — targeted fix for Apr 7</li>
+      <li>Testing recommendation: non-technical testers should focus on known numbers, not table-by-table exploration</li>
+    </ul>
+    <div style="color:var(--dim); font-size:.72rem; margin-top:.75rem;">Source: 03_CLIENTS/Faith_Driven_Movements/MEETINGS/2026-04-07_FDM_Stand_Up.md</div>
+  </div>
+</div>
+
+<!-- ==================== PANEL 5: brAIN / Sherman ==================== -->
+<div class="panel" id="panel-5">
+  <div class="card" style="border-left:3px solid var(--green);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
+      <div>
+        <div class="meeting-title">Tyler / Sherman brAIN Sync</div>
+        <div class="meeting-badges">
+          <span class="tag tag-green">PROSPECT</span>
+          <span class="tag tag-amber">EXPANSION OPP</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:1.4rem; font-weight:700;">9:15 AM</div>
+        <div style="color:var(--muted);">30 min &middot; 3 attendees</div>
+      </div>
+    </div>
+    <a href="https://meet.google.com/ror-sbot-vpe" class="join-btn" target="_blank">Join Meeting</a>
+  </div>
+
+  <!-- Background -->
+  <div class="card">
+    <div class="card-title">Background</div>
+    <p style="font-size:.87rem;">Sherman Williams is Managing Partner of AIN Ventures — defense/dual-use seed-stage VC with ~19 portfolio companies, $25M+ AUM. Former Naval Officer, Chicago Booth MBA. Tyler joined via SkillBridge and has been embedded working on the <strong>brAIN platform</strong> — AIN's internal AI deal flow and portfolio intelligence tool.</p>
+    <p style="font-size:.87rem; margin-top:.75rem;">Current SOW is $1,000 ("Brain Federal Side Project"). The brAIN platform had an outage April 6 (new dev triggered it). Backlog was down from 6 pages to 3 as of April 10, goal was zero. AIN hired a new dev — potential scope overlap risk for Tyler's engagement.</p>
+    <p style="font-size:.85rem; margin-top:.75rem; padding:.5rem .75rem; background:rgba(239,68,68,.06); border-radius:6px; border:1px solid rgba(239,68,68,.15);"><strong style="color:var(--red)">Data policy:</strong> AIN requires all work through Brain/Brainstorm only — no ChatGPT or Claude on company data.</p>
+  </div>
+
+  <!-- Key Contacts -->
+  <div class="card">
+    <div class="card-title">Key Contacts</div>
+    <table class="contacts-table">
+      <tr><th>Name</th><th>Role</th><th>Notes</th></tr>
+      <tr><td><strong>Sherman Williams</strong></td><td>Managing Partner</td><td>Decision maker + budget holder. Hands-on, engaged weekly.</td></tr>
+      <tr><td>Emily Davila</td><td>Operations/Admin</td><td>Handles ops/compliance. emily.davila@ainventures.com</td></tr>
+      <tr><td>Chase Miller</td><td>Associate</td><td>chase.miller@ainventures.com</td></tr>
+      <tr><td>Alex Combs</td><td>Newest team member</td><td>West Point, Duke Fuqua-bound. alex@ainventures.com</td></tr>
+    </table>
+  </div>
+
+  <!-- MEDDPIC -->
+  <div class="card">
+    <div class="card-title">MEDDPIC Status (Expansion Focus)</div>
+    <div class="meddpic-row"><span class="meddpic-label">Metrics</span><span class="tag tag-red">WEAK</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">No explicit success metrics. "Backlog to zero" is operational only.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Econ Buyer</span><span class="tag tag-green">STRONG</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">Sherman — decision maker + budget holder.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Decision Criteria</span><span class="tag tag-amber">MODERATE</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">Reliability + backlog clearance. Data security hard req.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Identify Pain</span><span class="tag tag-green">STRONG</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">Outage Apr 6, Zapier bug, 6-page backlog — active pain.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Champion</span><span class="tag tag-green">STRONG</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">Sherman himself. Hands-on and driving relationship.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Competition</span><span class="tag tag-red">UNKNOWN</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">New dev hired this week — could reduce Tyler's scope.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Paper Process</span><span class="tag tag-red">WEAK</span><span style="font-size:.8rem;color:var(--muted);margin-left:.5rem">SOW 1 at $1K is minimal. No expansion/retainer structure.</span></div>
+  </div>
+
+  <!-- Key Questions -->
+  <div class="card">
+    <div class="card-title">Key Questions to Ask</div>
+    <ol style="padding-left:1.25rem; font-size:.87rem;">
+      <li style="margin-bottom:.5rem;"><strong>Expansion:</strong> "Now that backlog is trending toward zero — what does 'done' look like? Is there a steady-state support cadence you'd want formalized?"</li>
+      <li style="margin-bottom:.5rem;"><strong>New dev overlap:</strong> "How is the new dev fitting in? Where do you see our work overlapping — specific areas you'd like me primary on?"</li>
+      <li style="margin-bottom:.5rem;"><strong>Pipeline integrity:</strong> "Is the pipeline fully healthy post-Zapier fix, or are there upstream data quality issues?"</li>
+      <li style="margin-bottom:.5rem;"><strong>Reliability:</strong> "After the Apr 6 outage — want a lightweight runbook or monitoring so the team can self-triage?"</li>
+      <li style="margin-bottom:.5rem;"><strong>May travel:</strong> "Heavy travel starting early May — want to lock in coverage or handoffs before you're on the road?"</li>
+    </ol>
+  </div>
+
+  <!-- Agenda -->
+  <div class="card">
+    <div class="card-title">Suggested Agenda (30 min)</div>
+    <table class="agenda-table">
+      <tr><td>0-5 min</td><td>Check-in, Sherman's priorities top of mind</td></tr>
+      <tr><td>5-12 min</td><td>brAIN backlog status — current page count, ETA to zero, data quality</td></tr>
+      <tr><td>12-18 min</td><td>New dev coordination — role clarity, handoff points</td></tr>
+      <tr><td>18-24 min</td><td>Platform reliability + monitoring/runbook discussion</td></tr>
+      <tr><td>24-28 min</td><td>May travel coverage, April 17 event support needs</td></tr>
+      <tr><td>28-30 min</td><td>Recap action items, confirm next sync</td></tr>
+    </table>
+  </div>
+
+  <!-- Talking Points -->
+  <div class="card">
+    <div class="card-title">If They Say... / You Say...</div>
+    <div class="tp-item">
+      <div class="tp-if">IF: New dev is handling most of brAIN maintenance</div>
+      "That makes sense — where would it be most valuable for me to stay involved? I want to make sure there's no coverage gap on the higher-complexity pieces."
+    </div>
+    <div class="tp-item">
+      <div class="tp-if">IF: Sherman wants to expand Tyler's scope</div>
+      "I'd love to map out what steady-state support looks like — whether that's a retainer or SOW 2 with defined deliverables. I can put a proposal together after this call."
+    </div>
+    <div class="tp-item">
+      <div class="tp-if">IF: April 17 event still needs help</div>
+      "I can help with logistics or prep materials — what would be most useful in the next 48 hours?"
+    </div>
+    <div class="tp-item">
+      <div class="tp-if">IF: Data policy / AI tool concerns come up</div>
+      "Understood — all work stays within Brain and Brainstorm. I'll flag it if anything has external model exposure."
+    </div>
+  </div>
+
+  <!-- Red Flags -->
+  <div class="card" style="border-left:3px solid var(--red);">
+    <div class="card-title">Red Flags</div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--red)">!!</span><span>New dev taking over brAIN maintenance = Tyler's $1K SOW at risk of not renewing</span></div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--amber)">--</span><span>No formalized success metrics — hard to demonstrate value for expansion</span></div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--amber)">--</span><span>Backlog stuck at 3 pages since Apr 10 — Sherman will flag it if no progress</span></div>
+  </div>
+
+  <!-- Success -->
+  <div class="card" style="border-left:3px solid var(--green);">
+    <div class="card-title">Success Criteria</div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--green)">&#10003;</span><span>Clear read on new dev's role and where Tyler stays primary</span></div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--green)">&#10003;</span><span>Backlog status communicated with concrete ETA to zero</span></div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--green)">&#10003;</span><span>At least one door opened toward SOW expansion or retainer</span></div>
+    <div class="rf-item"><span class="rf-icon" style="color:var(--green)">&#10003;</span><span>Relationship warmth maintained — Sherman treats Tyler as embedded team</span></div>
+  </div>
+</div>
+
+<!-- ==================== PANEL 6: Sales SOB ==================== -->
+<div class="panel" id="panel-6">
+  <div class="card" style="border-left:3px solid var(--dim);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
+      <div>
+        <div class="meeting-title">Sales, Advisory &amp; Marketing SOB</div>
+        <div class="meeting-badges">
+          <span class="tag tag-grey">RECURRING</span>
+          <span class="tag tag-grey">INTERNAL</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:1.4rem; font-weight:700;">9:30 AM</div>
+        <div style="color:var(--muted);">90 min &middot; 9 attendees (Zoom)</div>
+      </div>
+    </div>
+    <a href="https://us02web.zoom.us/j/86457868198" class="join-btn" target="_blank">Join Meeting</a>
+  </div>
+  <div class="card">
+    <h4 style="margin-bottom:.75rem;">Last Time (Mar 31)</h4>
+    <ul style="padding-left:1.25rem; font-size:.87rem; color:var(--muted);">
+      <li>Brain Federal deal closed ($55/hr maintainer SOW signed); SDD pilot kicked off with 10 Talents as first client</li>
+      <li>AI pod pricing model landed: 1 agentic engineer = 2.5 FTE equivalent (framing on FTE, not headcount)</li>
+      <li>Pipedrive data flow broken; Laza joining team creation as CP to bridge gap; Tyler building automated calendar/Circleback feed</li>
+    </ul>
+    <div style="color:var(--dim); font-size:.72rem; margin-top:.75rem;">Source: 06_ARCHIVE/Meetings/2026-03-31_Sales_Weekly_SOB.md</div>
+  </div>
+  <div class="card" style="border-left:3px solid var(--amber);">
+    <h4 style="margin-bottom:.5rem;">Hot Topics for Today</h4>
+    <ul style="padding-left:1.25rem; font-size:.87rem;">
+      <li><strong>Sphere $405K:</strong> Report from this morning's Rosario call — where do we stand?</li>
+      <li><strong>Arc Integrated revival:</strong> Paul pulled Tyler in yesterday — scoping action needed</li>
+      <li><strong>Tebow Group:</strong> In-person meeting Apr 20 in Jacksonville — 5 days out, no prep</li>
+      <li><strong>Epicutis:</strong> Tyler said "needs to be revived" — no action since Apr 3</li>
+      <li><strong>Contract tracker:</strong> Paul asked about the $55/hr Brain Federal rate — answer pending</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== PANEL 7: SixMap Standup ==================== -->
+<div class="panel" id="panel-7">
+  <div class="card" style="border-left:3px solid var(--blue);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
+      <div>
+        <div class="meeting-title">SixMap &lt;&gt; VictorySquare Stand-up</div>
+        <div class="meeting-badges">
+          <span class="tag tag-blue">RECURRING</span>
+          <span class="tag tag-blue">CLIENT</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:1.4rem; font-weight:700;">10:30 AM</div>
+        <div style="color:var(--muted);">30 min &middot; 17 attendees</div>
+      </div>
+    </div>
+    <a href="https://meet.google.com/wxu-yqgc-gzn" class="join-btn" target="_blank">Join Meeting</a>
+  </div>
+  <div class="card">
+    <h4 style="margin-bottom:.75rem;">Last Time (Apr 9)</h4>
+    <ul style="padding-left:1.25rem; font-size:.87rem; color:var(--muted);">
+      <li>Team shared progress on PR detail panel, SERP API extraction, data modeling, deployment planning</li>
+      <li>Conner raised question on Firecrawl necessity alongside existing SERP API organic results — async follow-up with Ionut</li>
+      <li>Team off Apr 10-13 for Romanian Easter; Sergiu out all of Apr 14-18; reconvene Tuesday Apr 15 (today)</li>
+    </ul>
+    <div style="color:var(--dim); font-size:.72rem; margin-top:.75rem;">Source: 03_CLIENTS/SixMap/MEETINGS/2026-04-09_SixMap_VictorySquare_Stand-up.md</div>
+  </div>
+  <div class="card" style="border-left:3px solid var(--blue);">
+    <h4 style="margin-bottom:.5rem;">Note</h4>
+    <p style="font-size:.87rem; color:var(--muted);">First standup after Romanian Easter break. Sergiu is still out this week. Expect status catch-up and sprint re-planning.</p>
+  </div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+function showTab(idx) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-'+idx).classList.add('active');
+  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+}
+</script>
+
+</body>
+</html>
