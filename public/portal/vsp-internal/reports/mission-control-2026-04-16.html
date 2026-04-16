@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Control — 2026-04-16</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17; --card: #141925; --border: #1e293b;
+  --green: #10b981; --blue: #3b82f6; --amber: #f59e0b;
+  --red: #ef4444; --purple: #8b5cf6; --text: #e2e8f0;
+  --muted: #94a3b8; --dim: #64748b;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+
+.header { padding:1.5rem 2rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
+.header h1 { font-size:1.4rem; font-weight:800; letter-spacing:-.02em; }
+.header .meta { color:var(--muted); font-size:.85rem; display:flex; gap:1rem; flex-wrap:wrap; }
+
+.tabs { display:flex; flex-wrap:wrap; gap:.3rem; padding:.75rem 1rem; background:#0d1220; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; overflow-x:auto; }
+.tab-btn { display:flex; align-items:center; gap:.35rem; padding:.45rem .85rem; border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--muted); font-size:.8rem; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer; white-space:nowrap; transition:all .15s; }
+.tab-btn:hover { background:rgba(255,255,255,.05); color:var(--text); }
+.tab-btn.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+.tab-section-label { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--dim); padding:.45rem .5rem; align-self:center; white-space:nowrap; }
+
+.content { max-width:1100px; margin:0 auto; padding:2rem; }
+.panel { display:none; }
+.panel.active { display:block; }
+
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:1.25rem; }
+.card-title { font-size:1rem; font-weight:700; margin-bottom:1rem; display:flex; align-items:center; gap:.5rem; }
+.card-sm { padding:1rem 1.25rem; }
+.section-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); margin-bottom:.75rem; }
+
+.stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1rem; margin-bottom:1.25rem; }
+.stat-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1rem 1.25rem; }
+.stat-val { font-size:2rem; font-weight:800; line-height:1; }
+.stat-label { font-size:.75rem; color:var(--muted); margin-top:.25rem; }
+
+.timeline { display:flex; flex-direction:column; gap:.5rem; }
+.tl-row { display:grid; grid-template-columns:80px 1fr 110px 100px; gap:.75rem; align-items:center; padding:.6rem .75rem; border-radius:8px; background:rgba(255,255,255,.02); border:1px solid var(--border); font-size:.85rem; }
+.tl-time { font-weight:700; color:var(--muted); font-size:.8rem; white-space:nowrap; }
+.tl-name { font-weight:600; }
+.tl-dur { color:var(--dim); font-size:.78rem; text-align:right; }
+.tl-cat { font-size:.72rem; }
+.tl-row.highlight { border-color:var(--green); background:rgba(16,185,129,.04); }
+
+.alert { display:flex; align-items:flex-start; gap:.75rem; padding:.75rem 1rem; border-radius:8px; margin-bottom:.6rem; font-size:.85rem; }
+.alert-critical { background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.25); }
+.alert-warn { background:rgba(245,158,11,.07); border:1px solid rgba(245,158,11,.2); }
+.alert-info { background:rgba(59,130,246,.07); border:1px solid rgba(59,130,246,.2); }
+.alert-icon { font-size:1rem; margin-top:.05rem; flex-shrink:0; }
+
+.priority-item { display:flex; align-items:flex-start; gap:.75rem; padding:.75rem 0; border-bottom:1px solid var(--border); }
+.priority-item:last-child { border-bottom:none; }
+.priority-num { width:24px; height:24px; border-radius:50%; background:var(--blue); color:#fff; font-size:.75rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:.1rem; }
+.priority-text { font-size:.87rem; }
+
+.pipeline-table { width:100%; border-collapse:collapse; font-size:.85rem; }
+.pipeline-table th { text-align:left; color:var(--dim); font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; padding:.5rem .75rem; border-bottom:1px solid var(--border); }
+.pipeline-table td { padding:.6rem .75rem; border-bottom:1px solid rgba(30,41,59,.5); }
+.pipeline-table tr:last-child td { border-bottom:none; }
+
+.prospect-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1rem; }
+.prospect-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1.25rem; }
+.prospect-name { font-weight:700; font-size:.95rem; margin-bottom:.4rem; }
+.prospect-meta { font-size:.78rem; color:var(--muted); margin-bottom:.75rem; }
+.meddpic-row { display:flex; align-items:center; gap:.75rem; margin:.4rem 0; }
+.meddpic-label { font-size:.72rem; color:var(--dim); width:90px; flex-shrink:0; }
+
+.scorecard-row { display:flex; align-items:center; gap:1rem; padding:.6rem 0; border-bottom:1px solid var(--border); }
+.scorecard-row:last-child { border-bottom:none; }
+.scorecard-label { width:130px; font-size:.85rem; flex-shrink:0; }
+.scorecard-bar-wrap { flex:1; background:rgba(255,255,255,.05); border-radius:4px; height:8px; overflow:hidden; }
+.scorecard-bar { height:100%; border-radius:4px; }
+.scorecard-pct { font-size:.8rem; color:var(--muted); width:45px; text-align:right; flex-shrink:0; }
+.scorecard-vals { font-size:.78rem; color:var(--dim); width:60px; flex-shrink:0; }
+
+.slack-item { padding:.6rem 0; border-bottom:1px solid var(--border); font-size:.85rem; }
+.slack-item:last-child { border-bottom:none; }
+.slack-channel { font-weight:600; color:var(--blue); font-size:.8rem; }
+.slack-text { margin-top:.2rem; color:var(--muted); }
+
+.inbox-row { display:flex; gap:1rem; }
+.inbox-box { flex:1; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1.25rem; text-align:center; }
+.inbox-num { font-size:2.5rem; font-weight:800; }
+.inbox-label { font-size:.8rem; color:var(--muted); margin-top:.25rem; }
+
+.meeting-header { margin-bottom:1.5rem; }
+.meeting-title { font-size:1.3rem; font-weight:800; margin-bottom:.4rem; }
+.meeting-badges { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.75rem; }
+.meeting-desc { font-size:.9rem; color:var(--muted); }
+
+.contacts-table { width:100%; border-collapse:collapse; font-size:.83rem; }
+.contacts-table th { text-align:left; color:var(--dim); font-size:.7rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; padding:.5rem .75rem; border-bottom:1px solid var(--border); }
+.contacts-table td { padding:.55rem .75rem; border-bottom:1px solid rgba(30,41,59,.5); vertical-align:top; }
+.contacts-table tr:last-child td { border-bottom:none; }
+
+.agenda-table { width:100%; border-collapse:collapse; font-size:.83rem; }
+.agenda-table td { padding:.5rem .75rem; border-bottom:1px solid rgba(30,41,59,.4); vertical-align:top; }
+.agenda-table td:first-child { width:90px; font-weight:700; color:var(--muted); white-space:nowrap; }
+.agenda-table tr:last-child td { border-bottom:none; }
+
+.tp-item { padding:.6rem .75rem; border-radius:8px; background:rgba(255,255,255,.02); border-left:3px solid var(--blue); margin-bottom:.6rem; font-size:.83rem; }
+.tp-if { font-weight:700; color:var(--blue); font-size:.75rem; margin-bottom:.2rem; }
+
+.rf-item { display:flex; gap:.6rem; align-items:flex-start; padding:.5rem 0; border-bottom:1px solid var(--border); font-size:.83rem; }
+.rf-item:last-child { border-bottom:none; }
+.rf-icon { flex-shrink:0; }
+
+.dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+.dot-grey { background:var(--dim); }
+.dot-blue { background:var(--blue); }
+.dot-green { background:var(--green); }
+.dot-amber { background:var(--amber); }
+.pulse { animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.join-btn { display:inline-block; margin-top:.75rem; padding:.5rem 1.25rem; background:var(--blue); color:#fff; border-radius:8px; font-weight:600; font-size:.85rem; text-decoration:none; }
+.join-btn:hover { background:#2563eb; }
+.tag { display:inline-block; padding:2px 10px; border-radius:6px; font-size:.75rem; font-weight:600; margin-right:6px; }
+.tag-blue { background:rgba(59,130,246,.15); color:var(--blue); }
+.tag-green { background:rgba(16,185,129,.15); color:var(--green); }
+.tag-amber { background:rgba(245,158,11,.15); color:var(--amber); }
+.tag-red { background:rgba(239,68,68,.15); color:var(--red); }
+.tag-grey { background:rgba(100,116,139,.15); color:var(--dim); }
+.tag-purple { background:rgba(139,92,246,.15); color:var(--purple); }
+
+.divider { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+
+.border-l-green { border-left:3px solid var(--green); padding-left:1rem; }
+.border-l-red { border-left:3px solid var(--red); padding-left:1rem; }
+.border-l-amber { border-left:3px solid var(--amber); padding-left:1rem; }
+
+.section-divider { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); margin:1.5rem 0 .75rem; display:flex; align-items:center; gap:.75rem; }
+.section-divider::after { content:''; flex:1; border-top:1px solid var(--border); }
+
+.tp-green { background:rgba(16,185,129,.04); border-left-color:var(--green); }
+
+@media(max-width:768px) {
+  .content { padding:1rem; }
+  .stats-row { grid-template-columns:repeat(2,1fr); }
+  .tl-row { grid-template-columns:70px 1fr; }
+  .tl-dur, .tl-cat { display:none; }
+  .two-col { grid-template-columns:1fr; }
+  .three-col { grid-template-columns:1fr; }
+  .prospect-grid { grid-template-columns:1fr; }
+  .header { padding:1rem; }
+  .tabs { padding:.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🚀 Mission Control</h1>
+  <div class="meta">
+    <span>Thursday, April 16, 2026</span>
+    <span>Eastern Time</span>
+    <span>9 today · 7 tomorrow</span>
+    <span>2 prospect calls tomorrow ★</span>
+  </div>
+</div>
+
+<div class="tabs" id="tabBar">
+  <button class="tab-btn active" onclick="showTab(0)"><span class="dot dot-green pulse"></span>Overview</button>
+
+  <span class="tab-section-label">TODAY APR 16 —</span>
+  <button class="tab-btn" onclick="showTab(1)"><span class="dot dot-grey"></span>7:00a All Hands!</button>
+  <button class="tab-btn" onclick="showTab(2)"><span class="dot dot-blue"></span>8:00a SixMap Internal</button>
+  <button class="tab-btn" onclick="showTab(3)"><span class="dot dot-blue"></span>9:00a FDM Stand Up</button>
+  <button class="tab-btn" onclick="showTab(4)"><span class="dot dot-blue"></span>10:00a Justin/Nils/Kyle</button>
+  <button class="tab-btn" onclick="showTab(5)"><span class="dot dot-blue"></span>10:30a SixMap&lt;&gt;VS</button>
+  <button class="tab-btn" onclick="showTab(6)"><span class="dot dot-blue"></span>1:00p Tyler &amp; Matt</button>
+  <button class="tab-btn" onclick="showTab(7)"><span class="dot dot-amber"></span>3:00p LTG&lt;&gt;Lascara RE</button>
+
+  <span class="tab-section-label">TOMORROW APR 17 —</span>
+  <button class="tab-btn" onclick="showTab(8)"><span class="dot dot-green pulse"></span>8:00a Sphere Proposal ★</button>
+  <button class="tab-btn" onclick="showTab(9)"><span class="dot dot-green"></span>11:00a World Domination</button>
+</div>
+
+<!-- ======================== PANEL 0: OVERVIEW ======================== -->
+<div class="panel active" id="panel-0">
+<div class="content">
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--blue)">9</div>
+      <div class="stat-label">Meetings today + 7 tomorrow</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--muted)">6 / 3</div>
+      <div class="stat-label">Recurring / New</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--green)">2</div>
+      <div class="stat-label">Prospect calls tomorrow (prep needed)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" style="color:var(--amber)">14</div>
+      <div class="stat-label">New Circleback meetings to process</div>
+    </div>
+  </div>
+
+  <!-- Day at a glance -->
+  <div class="card">
+    <div class="card-title">📅 Day at a Glance</div>
+
+    <div class="section-label">Today — Thursday April 16</div>
+    <div class="timeline">
+      <div class="tl-row">
+        <div class="tl-time">7:00 AM</div>
+        <div class="tl-name">All Hands!</div>
+        <div class="tl-dur">60 min</div>
+        <div class="tl-cat"><span class="tag tag-grey">INTERNAL</span></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">8:00 AM</div>
+        <div class="tl-name">SixMap Internal Sync</div>
+        <div class="tl-dur">30 min</div>
+        <div class="tl-cat"><span class="tag tag-blue">CLIENT</span></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">9:00 AM</div>
+        <div class="tl-name">FDM Stand Up</div>
+        <div class="tl-dur">15 min</div>
+        <div class="tl-cat"><span class="tag tag-blue">CLIENT</span></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">10:00 AM</div>
+        <div class="tl-name">Justin / Nils / Kyle / Tyler</div>
+        <div class="tl-dur">60 min</div>
+        <div class="tl-cat"><span class="tag tag-blue">CLIENT-FDE</span></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">10:30 AM</div>
+        <div class="tl-name">SixMap &lt;&gt; VS Stand-up</div>
+        <div class="tl-dur">30 min</div>
+        <div class="tl-cat"><span class="tag tag-blue">CLIENT</span></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">1:00 PM</div>
+        <div class="tl-name">Tyler &amp; Matt Catch Up (Fulcrum)</div>
+        <div class="tl-dur">30 min</div>
+        <div class="tl-cat"><span class="tag tag-blue">CLIENT</span></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">3:00 PM</div>
+        <div class="tl-name">LTG Assist &lt;&gt; Lascara RE</div>
+        <div class="tl-dur">30 min</div>
+        <div class="tl-cat"><span class="tag tag-amber">EXTERNAL</span></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Tomorrow — Friday April 17</div>
+    <div class="timeline">
+      <div class="tl-row highlight">
+        <div class="tl-time">8:00 AM</div>
+        <div class="tl-name"><span class="dot dot-green pulse"></span>Sphere Proposal Walkthrough ★</div>
+        <div class="tl-dur">60 min</div>
+        <div class="tl-cat"><span class="tag tag-green">PROSPECT</span></div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">11:00 AM</div>
+        <div class="tl-name">World Domination / 10Talents</div>
+        <div class="tl-dur">60 min</div>
+        <div class="tl-cat"><span class="tag tag-green">PROSPECT</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Critical Alerts -->
+  <div class="card">
+    <div class="card-title">🚨 Critical Alerts</div>
+    <div class="alert alert-critical">
+      <span class="alert-icon">🔴</span>
+      <div><strong>Coverage ratio 0.12x</strong> — need 3.0x minimum. Pipeline is critically underfunded. Only $2.87M against an assumed $24M+ target.</div>
+    </div>
+    <div class="alert alert-critical">
+      <span class="alert-icon">🔴</span>
+      <div><strong>7 overdue deals totaling $1.58M</strong> need immediate triage. These are stalled, not closed — action required.</div>
+    </div>
+    <div class="alert alert-critical">
+      <span class="alert-icon">🔴</span>
+      <div><strong>10 deals missing person_id</strong> in Pipedrive — orphaned deal records with no contact linkage. Data quality risk.</div>
+    </div>
+    <div class="alert alert-critical">
+      <span class="alert-icon">🔴</span>
+      <div><strong>56 action items stale</strong> — last updated March 3 (44 days ago). CURRENT.md is not being maintained.</div>
+    </div>
+    <div class="alert alert-critical">
+      <span class="alert-icon">🔴</span>
+      <div><strong>Activity dashboard frozen</strong> since March 17. Scorecard data is 30 days stale — real actuals unknown.</div>
+    </div>
+  </div>
+
+  <!-- Top 3 Priorities -->
+  <div class="card">
+    <div class="card-title">🎯 Top 3 Priorities Today</div>
+    <div class="priority-item">
+      <div class="priority-num">1</div>
+      <div class="priority-text"><strong>Sphere proposal walkthrough tomorrow 8 AM</strong> — biggest deal in pipeline at $405K. Board vote Apr 23. Final gate. Prep tonight. Tab 8 has full brief.</div>
+    </div>
+    <div class="priority-item">
+      <div class="priority-num">2</div>
+      <div class="priority-text"><strong>Triage 7 overdue deals ($1.58M)</strong> — identify which are truly stalled vs. needs push. Update stages or close them out to clean pipeline view.</div>
+    </div>
+    <div class="priority-item">
+      <div class="priority-num">3</div>
+      <div class="priority-text"><strong>Clear 14 unprocessed Circleback meetings</strong> — run /process-call or /scan-circleback. MEDDPIC, Pipedrive, and action items are all degraded without this.</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <!-- Pipeline Snapshot -->
+    <div class="card">
+      <div class="card-title">💰 Pipeline Snapshot</div>
+      <div style="display:flex;gap:2rem;margin-bottom:1rem;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:1.6rem;font-weight:800;color:var(--blue)">47</div>
+          <div style="font-size:.75rem;color:var(--muted)">Open Deals</div>
+        </div>
+        <div>
+          <div style="font-size:1.6rem;font-weight:800;color:var(--green)">$2.87M</div>
+          <div style="font-size:.75rem;color:var(--muted)">Total Pipeline</div>
+        </div>
+        <div>
+          <div style="font-size:1.6rem;font-weight:800;color:var(--red)">0.12x</div>
+          <div style="font-size:.75rem;color:var(--muted)">Coverage (need 3.0x)</div>
+        </div>
+      </div>
+      <div class="section-label">Top 5 by Value</div>
+      <table class="pipeline-table">
+        <thead>
+          <tr><th>Company</th><th>Value</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>DRB</td><td style="color:var(--green);font-weight:700">$500K</td><td><span class="tag tag-blue">Active</span></td></tr>
+          <tr><td>Sphere</td><td style="color:var(--green);font-weight:700">$405K</td><td><span class="tag tag-green">★ Proposal</span></td></tr>
+          <tr><td>ClaimInformatics</td><td style="color:var(--green);font-weight:700">$360K</td><td><span class="tag tag-amber">Active</span></td></tr>
+          <tr><td>Bear Analytics</td><td style="color:var(--green);font-weight:700">$360K</td><td><span class="tag tag-amber">Active</span></td></tr>
+          <tr><td>ClaimInformatics SOW3</td><td style="color:var(--green);font-weight:700">$360K</td><td><span class="tag tag-amber">Active</span></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:.75rem;font-size:.78rem;color:var(--dim)">7 overdue · 0 stuck · 10 missing person_id</div>
+    </div>
+
+    <!-- Activity Scorecard -->
+    <div class="card">
+      <div class="card-title">📊 Activity Scorecard <span style="font-size:.72rem;color:var(--amber);font-weight:400;margin-left:.5rem">⚠ Data from Mar 17 — frozen</span></div>
+      <div class="scorecard-row">
+        <div class="scorecard-label">Networking</div>
+        <div class="scorecard-bar-wrap"><div class="scorecard-bar" style="width:60%;background:var(--amber)"></div></div>
+        <div class="scorecard-pct" style="color:var(--amber)">60%</div>
+        <div class="scorecard-vals">3 / 5</div>
+      </div>
+      <div class="scorecard-row">
+        <div class="scorecard-label">Prospecting</div>
+        <div class="scorecard-bar-wrap"><div class="scorecard-bar" style="width:23%;background:var(--red)"></div></div>
+        <div class="scorecard-pct" style="color:var(--red)">23%</div>
+        <div class="scorecard-vals">14 / 60</div>
+      </div>
+      <div class="scorecard-row">
+        <div class="scorecard-label">Protecting</div>
+        <div class="scorecard-bar-wrap"><div class="scorecard-bar" style="width:40%;background:var(--red)"></div></div>
+        <div class="scorecard-pct" style="color:var(--red)">40%</div>
+        <div class="scorecard-vals">2 / 5</div>
+      </div>
+      <div class="scorecard-row">
+        <div class="scorecard-label">Referring</div>
+        <div class="scorecard-bar-wrap"><div class="scorecard-bar" style="width:20%;background:var(--red)"></div></div>
+        <div class="scorecard-pct" style="color:var(--red)">20%</div>
+        <div class="scorecard-vals">3 / 15</div>
+      </div>
+      <div style="margin-top:.75rem;padding:.6rem .75rem;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:.8rem;color:var(--amber)">
+        Dashboard frozen since Mar 17 — real actuals may differ. Run /activity-log to update.
+      </div>
+    </div>
+  </div>
+
+  <!-- MEDDPIC Tracker -->
+  <div class="card">
+    <div class="card-title">🎯 MEDDPIC Pipeline Status</div>
+    <div class="three-col" style="margin-bottom:1rem;">
+      <div style="padding:.75rem;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:8px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--green);margin-bottom:.5rem;">Strong (9)</div>
+        <div style="font-size:.82rem;line-height:1.8;">Sphere · Pryze · E-Show · PBS · Ripple Operations · Epicutis · + 3 more</div>
+      </div>
+      <div style="padding:.75rem;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:8px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:.5rem;">Moderate (8)</div>
+        <div style="font-size:.82rem;line-height:1.8;">Claims Informatics · Connexus · Elevare Law · Truthly · Well Being · Military By Owner · Brain Federal · Emotionally Healthy</div>
+      </div>
+      <div style="padding:.75rem;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:8px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:.5rem;">Weak (12)</div>
+        <div style="font-size:.82rem;line-height:1.8;">Luxton · AIRE Response · FDE · Vico · Mimic AI · Rare.org · Grizzly Growth · Epidaurus · Sovereigns · + 3 more</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INBOX + Gmail -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">📥 INBOX Status</div>
+      <div class="inbox-row" style="margin-bottom:1rem;">
+        <div class="inbox-box">
+          <div class="inbox-num" style="color:var(--amber)">10</div>
+          <div class="inbox-label">Items in 00_INBOX</div>
+        </div>
+        <div class="inbox-box">
+          <div class="inbox-num" style="color:var(--dim)">1</div>
+          <div class="inbox-label">Meetings pending</div>
+        </div>
+      </div>
+      <div class="section-label">Gmail Summary</div>
+      <div class="rf-item"><span class="rf-icon">📬</span><div>3 prospect calendar acceptances — Stephanie Young, Rami Mogannam, Emily McMahan</div></div>
+      <div class="rf-item"><span class="rf-icon">✏️</span><div>4 drafts pending — 2 Pryze, 1 USNA Summit, 1 template</div></div>
+      <div class="rf-item"><span class="rf-icon">👤</span><div>11+ contacts in sent mail not yet in Pipedrive — enrichment needed</div></div>
+    </div>
+
+    <!-- Slack Roundup -->
+    <div class="card">
+      <div class="card-title">💬 Slack Roundup</div>
+      <div class="section-label">Hot Channels</div>
+      <div class="slack-item">
+        <div class="slack-channel">#prospect-sphere</div>
+        <div class="slack-text">Proposal prep active — board vote Apr 23. ★ Priority.</div>
+      </div>
+      <div class="slack-item">
+        <div class="slack-channel">#prospect-yourhealthpro</div>
+        <div class="slack-text">P0 / MSA in motion — needs monitoring.</div>
+      </div>
+      <div class="slack-item">
+        <div class="slack-channel">#prospect-arc-integrated</div>
+        <div class="slack-text">Pricing conversation active.</div>
+      </div>
+      <div class="slack-item">
+        <div class="slack-channel">#prospect-softledger</div>
+        <div class="slack-text">Integration discussion ongoing.</div>
+      </div>
+      <div class="slack-item">
+        <div class="slack-channel">#prospect-ripple</div>
+        <div class="slack-text">Awaiting Kara's response on proposal.</div>
+      </div>
+      <div class="slack-item">
+        <div class="slack-channel">#rocketship-ops</div>
+        <div class="slack-text">Last run Apr 15 — 4 meetings processed, Pryze draft, YHP reply sent.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="section-label">Gone Quiet (&gt;10 days)</div>
+      <div class="slack-item"><div class="slack-channel" style="color:var(--dim)">#prospect-elevare-law</div><div class="slack-text">Last activity Feb 24</div></div>
+      <div class="slack-item"><div class="slack-channel" style="color:var(--dim)">#prospect-truthly</div><div class="slack-text">Last activity Feb 6</div></div>
+      <div class="slack-item"><div class="slack-channel" style="color:var(--dim)">#prospect-ehd</div><div class="slack-text">Last activity Mar 10</div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ======================== PANEL 1: ALL HANDS ======================== -->
+<div class="panel" id="panel-1">
+<div class="content">
+  <div class="meeting-header">
+    <div class="meeting-title">All Hands!</div>
+    <div class="meeting-badges">
+      <span class="tag tag-grey">INTERNAL</span>
+      <span class="tag tag-purple">RECURRING</span>
+    </div>
+    <div class="meeting-desc">Company-wide all hands. Mandatory attendance. Zoom.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Meeting Details</div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:.5rem .75rem;font-size:.87rem;">
+      <span style="color:var(--dim)">Time</span><span>7:00 AM ET — 8:00 AM ET (60 min)</span>
+      <span style="color:var(--dim)">Platform</span><span>Zoom</span>
+      <span style="color:var(--dim)">Frequency</span><span>Recurring</span>
+    </div>
+    <a href="https://us02web.zoom.us/j/86424664111" target="_blank" class="join-btn">Join Zoom Meeting</a>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🕐 Last Time (March 19)</div>
+    <div class="section-label">Source: 06_ARCHIVE/Meetings/2026-03-19_All_Hands_AI_Strategy.md</div>
+    <div class="rf-item"><span class="rf-icon">📣</span><div>Paul announced company AI strategy response — full pivot to AI-augmented delivery</div></div>
+    <div class="rf-item"><span class="rf-icon">⚠️</span><div>Profit sharing suspended for the cycle</div></div>
+    <div class="rf-item"><span class="rf-icon">🏢</span><div>Office closing — transition to remote-first</div></div>
+    <div class="rf-item"><span class="rf-icon">🎯</span><div>Bonuses tied directly to individual targets — no floor</div></div>
+    <div class="rf-item"><span class="rf-icon">🤖</span><div>Team mandated to use AI in daily workflow — not optional</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ======================== PANEL 2: SIXMAP INTERNAL ======================== -->
+<div class="panel" id="panel-2">
+<div class="content">
+  <div class="meeting-header">
+    <div class="meeting-title">SixMap Internal Sync</div>
+    <div class="meeting-badges">
+      <span class="tag tag-blue">CLIENT</span>
+      <span class="tag tag-purple">RECURRING</span>
+    </div>
+    <div class="meeting-desc">VSP internal SixMap team sync — engineering blockers, deployment status, tooling decisions.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Meeting Details</div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:.5rem .75rem;font-size:.87rem;">
+      <span style="color:var(--dim)">Time</span><span>8:00 AM ET — 8:30 AM ET (30 min)</span>
+      <span style="color:var(--dim)">Platform</span><span>Google Meet</span>
+      <span style="color:var(--dim)">Frequency</span><span>Recurring</span>
+    </div>
+    <a href="https://meet.google.com/usn-bdnd-nph" target="_blank" class="join-btn">Join Meet</a>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🕐 Last Time (March 26)</div>
+    <div class="section-label">Source: 06_ARCHIVE/Meetings/2026-03-26_SixMap_Internal_Sync.md</div>
+    <div class="rf-item"><span class="rf-icon">🔧</span><div>Stefana onboarding blockers — Tailscale, SSH, and repo access all unresolved</div></div>
+    <div class="rf-item"><span class="rf-icon">🖥️</span><div>Admin console issue remained unresolved at end of call</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📌 Also Notable (Apr 14 Touchbase)</div>
+    <div class="rf-item"><span class="rf-icon">✅</span><div>Rares now has SSH access via Tailscale — resolved</div></div>
+    <div class="rf-item"><span class="rf-icon">🐳</span><div>Docker + Ollama locked in as local dev stack</div></div>
+    <div class="rf-item"><span class="rf-icon">🤖</span><div>Gemma 4 27B selected as primary model for local inference</div></div>
+    <div class="rf-item"><span class="rf-icon">⏳</span><div>DGX deployment still pending — no ETA</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ======================== PANEL 3: FDM STANDUP ======================== -->
+<div class="panel" id="panel-3">
+<div class="content">
+  <div class="meeting-header">
+    <div class="meeting-title">FDM Stand Up</div>
+    <div class="meeting-badges">
+      <span class="tag tag-blue">CLIENT</span>
+      <span class="tag tag-purple">RECURRING</span>
+    </div>
+    <div class="meeting-desc">Faith Driven Ministries daily standup — sprint progress, analytics, infrastructure.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Meeting Details</div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:.5rem .75rem;font-size:.87rem;">
+      <span style="color:var(--dim)">Time</span><span>9:00 AM ET — 9:15 AM ET (15 min)</span>
+      <span style="color:var(--dim)">Platform</span><span>Google Meet</span>
+      <span style="color:var(--dim)">Frequency</span><span>Recurring (daily)</span>
+    </div>
+    <a href="https://meet.google.com/ord-wsqb-fxy" target="_blank" class="join-btn">Join Meet</a>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🕐 Last Time (March 23)</div>
+    <div class="section-label">Source: 06_ARCHIVE/Meetings/FDM_Standups/2026-03-23_FDM_Standup.md</div>
+    <div class="rf-item"><span class="rf-icon">📊</span><div>GroupFinder analytics live — 190 events in GTM pipeline</div></div>
+    <div class="rf-item"><span class="rf-icon">🔌</span><div>MCP for Neon deployed and operational</div></div>
+    <div class="rf-item"><span class="rf-icon">📅</span><div>Sprint demo scheduled Thursday Mar 26</div></div>
+    <div class="rf-item"><span class="rf-icon">🤖</span><div>Claude is actively replacing manual dashboard work</div></div>
+    <div class="rf-item"><span class="rf-icon">🎥</span><div>Video infrastructure PDF shared with team</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ======================== PANEL 4: JUSTIN/NILS/KYLE/TYLER ======================== -->
+<div class="panel" id="panel-4">
+<div class="content">
+  <div class="meeting-header">
+    <div class="meeting-title">Justin / Nils / Kyle / Tyler Weekly</div>
+    <div class="meeting-badges">
+      <span class="tag tag-blue">CLIENT-FDE</span>
+      <span class="tag tag-purple">RECURRING</span>
+    </div>
+    <div class="meeting-desc">Weekly leadership sync with Faith Driven Entrepreneurs leadership team.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Meeting Details</div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:.5rem .75rem;font-size:.87rem;">
+      <span style="color:var(--dim)">Time</span><span>10:00 AM ET — 11:00 AM ET (60 min)</span>
+      <span style="color:var(--dim)">Platform</span><span>Zoom</span>
+      <span style="color:var(--dim)">Frequency</span><span>Weekly</span>
+    </div>
+    <a href="https://us04web.zoom.us/s/6266434759" target="_blank" class="join-btn">Join Zoom</a>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🕐 Last Time (March 20)</div>
+    <div class="section-label">Source: 06_ARCHIVE/Meetings/2026-03-20_Justin_Nils_Tyler_Kyle_Connect.md</div>
+    <div class="rf-item"><span class="rf-icon">💡</span><div>Key theme: <strong>Dashboards should tell who to call</strong> — actionable CRM output, not just data visualization</div></div>
+    <div class="rf-item"><span class="rf-icon">📏</span><div>Enrollment benchmark locked — descending path: 7 → 6 → 5 → 4</div></div>
+    <div class="rf-item"><span class="rf-icon">👥</span><div>650 groups now registered in the platform</div></div>
+    <div class="rf-item"><span class="rf-icon">⏱️</span><div>GroupFinder only shows a 2-week snapshot — historical view gap identified</div></div>
+    <div class="rf-item"><span class="rf-icon">🔄</span><div>Justin open to replacing GroupFinder if a better solution surfaces</div></div>
+    <div class="rf-item"><span class="rf-icon">🔍</span><div>Kyle wants a data enrichment provider locked in — decision pending</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ======================== PANEL 5: SIXMAP<>VS ======================== -->
+<div class="panel" id="panel-5">
+<div class="content">
+  <div class="meeting-header">
+    <div class="meeting-title">SixMap &lt;&gt; VS Stand-up</div>
+    <div class="meeting-badges">
+      <span class="tag tag-blue">CLIENT</span>
+      <span class="tag tag-purple">RECURRING</span>
+    </div>
+    <div class="meeting-desc">Joint VSP + SixMap engineering stand-up. 18 attendees across both orgs.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Meeting Details</div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:.5rem .75rem;font-size:.87rem;">
+      <span style="color:var(--dim)">Time</span><span>10:30 AM ET — 11:00 AM ET (30 min)</span>
+      <span style="color:var(--dim)">Platform</span><span>Google Meet</span>
+      <span style="color:var(--dim)">Attendees</span><span>18 (VSP + SixMap)</span>
+      <span style="color:var(--dim)">Frequency</span><span>Weekly</span>
+    </div>
+    <a href="https://meet.google.com/wxu-yqgc-gzn" target="_blank" class="join-btn">Join Meet</a>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🕐 Last Time (April 9)</div>
+    <div class="section-label">Source: 03_CLIENTS/SixMap/MEETINGS/2026-04-09_SixMap_VictorySquare_Stand-up.md</div>
+    <div class="rf-item"><span class="rf-icon">🗺️</span><div>PR detail panel work in progress</div></div>
+    <div class="rf-item"><span class="rf-icon">🔍</span><div>SERP API integration underway</div></div>
+    <div class="rf-item"><span class="rf-icon">📐</span><div>Data modeling and deployment planning sessions completed</div></div>
+    <div class="rf-item"><span class="rf-icon">🔥</span><div>Conner and Ionut working on Firecrawl integration</div></div>
+    <div class="rf-item"><span class="rf-icon">🇷🇴</span><div>Team off Apr 10–13 for Romanian Easter. Sergiu out full week Apr 14–18.</div></div>
+    <div class="alert alert-warn" style="margin-top:.75rem;">
+      <span class="alert-icon">⚠️</span>
+      <div>Sergiu is out through Apr 18 — expect reduced SixMap team capacity this week.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ======================== PANEL 6: TYLER & MATT ======================== -->
+<div class="panel" id="panel-6">
+<div class="content">
+  <div class="meeting-header">
+    <div class="meeting-title">Tyler &amp; Matt Catch Up</div>
+    <div class="meeting-badges">
+      <span class="tag tag-blue">CLIENT-Fulcrum</span>
+      <span class="tag tag-purple">RECURRING</span>
+    </div>
+    <div class="meeting-desc">Recurring catch-up with Matt Weir from Fulcrum Insights (not Matt Walnock).</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Meeting Details</div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:.5rem .75rem;font-size:.87rem;">
+      <span style="color:var(--dim)">Time</span><span>1:00 PM ET — 1:30 PM ET (30 min)</span>
+      <span style="color:var(--dim)">Platform</span><span>Zoom</span>
+      <span style="color:var(--dim)">Contact</span><span>Matt Weir | Fulcrum Insights</span>
+      <span style="color:var(--dim)">Frequency</span><span>Recurring</span>
+    </div>
+    <a href="https://us06web.zoom.us/j/86478986832" target="_blank" class="join-btn">Join Zoom</a>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🕐 Last Time (March 30)</div>
+    <div class="section-label">Source: 06_ARCHIVE/Meetings/2026-03-30_Quick_Checkin_with_Matt.md</div>
+    <div class="rf-item"><span class="rf-icon">✅</span><div>Brief touchbase — Matt overall positive on the engagement</div></div>
+    <div class="rf-item"><span class="rf-icon">⚠️</span><div>Matt loved the proposal EXCEPT for the "two dedicated people" structure — felt over-resourced</div></div>
+    <div class="rf-item"><span class="rf-icon">🔄</span><div>Decision made to revisit the staffing model — flexibility needed in how resources are presented</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ======================== PANEL 7: LTG<>LASCARA RE ======================== -->
+<div class="panel" id="panel-7">
+<div class="content">
+  <div class="meeting-header">
+    <div class="meeting-title">LTG Assist &lt;&gt; Lascara RE</div>
+    <div class="meeting-badges">
+      <span class="tag tag-amber">EXTERNAL</span>
+      <span class="tag tag-grey">NEW</span>
+    </div>
+    <div class="meeting-desc">Personal / investment meeting outside VSP scope.</div>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--amber);">
+    <div class="card-title">📋 Meeting Details</div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:.5rem .75rem;font-size:.87rem;margin-bottom:1rem;">
+      <span style="color:var(--dim)">Time</span><span>3:00 PM ET — 3:30 PM ET (30 min)</span>
+      <span style="color:var(--dim)">Platform</span><span>No link — in-person or direct call</span>
+      <span style="color:var(--dim)">Contact</span><span>James Lascara | Lascara Real Estate</span>
+    </div>
+    <div class="alert alert-warn">
+      <span class="alert-icon">ℹ️</span>
+      <div>Personal / investment meeting. Tyler is attending in his capacity as <strong>LTG Investments principal</strong> — this is outside VSP scope. No CRM action needed, no Pipedrive entry required. No follow-up from VSP operations.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ======================== PANEL 8: SPHERE PROPOSAL ======================== -->
+<div class="panel" id="panel-8">
+<div class="content">
+  <div class="meeting-header">
+    <div class="meeting-title"><span class="dot dot-green pulse"></span>Sphere Proposal Walkthrough ★</div>
+    <div class="meeting-badges">
+      <span class="tag tag-green">PROSPECT</span>
+      <span class="tag tag-grey">TOMORROW APR 17</span>
+      <span class="tag tag-amber">BOARD VOTE APR 23</span>
+    </div>
+    <div class="meeting-desc">Final gate before the board votes. $405K fixed-price. Two prior migration failures. VSP is the only fixed-price option at a competitive number.</div>
+  </div>
+
+  <!-- Background -->
+  <div class="card" style="border-left:3px solid var(--green);">
+    <div class="card-title">🏢 Deal Background</div>
+    <div style="font-size:.87rem;line-height:1.8;color:var(--text);">
+      Paul made the intro. Rita Gurevich (CEO) ran initial discovery April 7. Rosario Mastrogiacomo (CPO) brought in for deep technical access April 15. Two calls deep. A <strong>$405K fixed-price proposal</strong> is in hand. <strong>April 18 is the proposal walkthrough</strong> — the final gate before the board votes April 23. Platform migration has failed <strong>twice before</strong>. VSP's differentiator: the only fixed-price option at a competitive number. All other vendors are T&M.
+    </div>
+  </div>
+
+  <!-- Meeting Details -->
+  <div class="card">
+    <div class="card-title">📋 Meeting Details</div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:.5rem .75rem;font-size:.87rem;">
+      <span style="color:var(--dim)">Date</span><span><strong>Tomorrow — Friday, April 17</strong></span>
+      <span style="color:var(--dim)">Time</span><span>8:00 AM ET — 9:00 AM ET (60 min)</span>
+      <span style="color:var(--dim)">Platform</span><span>Zoom</span>
+    </div>
+    <a href="https://us02web.zoom.us/j/84485291910" target="_blank" class="join-btn">Join Zoom Meeting</a>
+  </div>
+
+  <!-- Key Contacts -->
+  <div class="card">
+    <div class="card-title">👥 Key Contacts</div>
+    <table class="contacts-table">
+      <thead>
+        <tr><th>Name</th><th>Title / Org</th><th>Role in Deal</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Tom Garrity</strong></td>
+          <td>Arc2 Consulting</td>
+          <td>UNKNOWN — possibly board-appointed evaluator. Critical to identify on call.</td>
+          <td><span class="tag tag-red">NOT in Pipedrive</span></td>
+        </tr>
+        <tr>
+          <td><strong>Rosario Mastrogiacomo</strong></td>
+          <td>CPO, SPHERE</td>
+          <td>Champion — 6-month mandate, no internal engineering. Behaving as strong advocate.</td>
+          <td><span class="tag tag-green">Champion</span></td>
+        </tr>
+        <tr>
+          <td><strong>Rita Gurevich</strong></td>
+          <td>CEO, SPHERE</td>
+          <td>Economic Buyer — confirmed. NOT on this meeting invite.</td>
+          <td><span class="tag tag-amber">Watch — absent</span></td>
+        </tr>
+        <tr>
+          <td><strong>Paul Doman</strong></td>
+          <td>VSP</td>
+          <td>Organizer, relationship owner. Confirm NDA status before call.</td>
+          <td><span class="tag tag-blue">VSP Internal</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MEDDPIC -->
+  <div class="card">
+    <div class="card-title">🎯 MEDDPIC Status</div>
+    <div class="meddpic-row"><span class="meddpic-label">Metrics</span><span class="tag tag-amber">MODERATE</span><span style="font-size:.82rem;color:var(--muted)">$405K known. Cost of delay not quantified. No budget ceiling revealed.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Economic Buyer</span><span class="tag tag-green">STRONG</span><span style="font-size:.82rem;color:var(--muted)">Rita Gurevich (CEO) confirmed. Not on this invite — watch.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Decision Criteria</span><span class="tag tag-green">STRONG</span><span style="font-size:.82rem;color:var(--muted)">Multi-tenant SaaS on AWS, two-stream delivery, fixed-price, May 1 start.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Decision Process</span><span class="tag tag-green">STRONG</span><span style="font-size:.82rem;color:var(--muted)">4 vendors evaluated. Board votes Apr 23. Rosario recommends → Rita presents.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Paper Process</span><span class="tag tag-red">WEAK</span><span style="font-size:.82rem;color:var(--muted)">NDA status UNKNOWN. No legal or procurement visibility. Urgent gap.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Identify Pain</span><span class="tag tag-green">STRONG</span><span style="font-size:.82rem;color:var(--muted)">Platform blocking revenue. Two failed migrations. Board-level urgency.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Champion</span><span class="tag tag-green">STRONG</span><span style="font-size:.82rem;color:var(--muted)">Rosario (primary) + Rita (secondary). Both behaving as advocates.</span></div>
+    <div class="meddpic-row"><span class="meddpic-label">Competition</span><span class="tag tag-amber">MODERATE</span><span style="font-size:.82rem;color:var(--muted)">4 vendors total. All others T&M. One other fixed was too high. Names unknown.</span></div>
+  </div>
+
+  <!-- Key Questions -->
+  <div class="card">
+    <div class="card-title">❓ Key Questions to Ask</div>
+    <ol style="font-size:.87rem;line-height:2;padding-left:1.25rem;color:var(--text);">
+      <li><strong>Tom's role</strong> — "Tom, great to have you again — I want to make sure we're addressing the right perspectives. What's your role in evaluating this proposal?"</li>
+      <li><strong>NDA status</strong> — "Paul mentioned the NDA — confirmed on SPHERE's side?"</li>
+      <li><strong>Budget ceiling</strong> — "Does the board have a vendor budget range they've approved?"</li>
+      <li><strong>Prior failure specifics</strong> — "What specifically caused the two prior migration attempts to stall?"</li>
+      <li><strong>Existing SaaS lessons</strong> — "What worked in the Intelligent Discovery SaaS rollout?"</li>
+      <li><strong>Contracting path</strong> — "If the board votes Apr 23, what's the contracting process to reach May 1 start?"</li>
+      <li><strong>Tom's open questions</strong> — "Tom, what's still an open question about our approach?"</li>
+    </ol>
+  </div>
+
+  <!-- Agenda -->
+  <div class="card">
+    <div class="card-title">📋 Suggested Agenda</div>
+    <table class="agenda-table">
+      <tbody>
+        <tr><td>0:00–0:05</td><td><strong>Intros + Role Clarification</strong><br><span style="color:var(--muted);font-size:.8rem;">Owner: Tyler — Establish Tom's role clearly before diving into content</span></td></tr>
+        <tr><td>0:05–0:10</td><td><strong>Opening Frame</strong><br><span style="color:var(--muted);font-size:.8rem;">Owner: Tyler — Acknowledge prior failures, set VSP's 3 guiding principles</span></td></tr>
+        <tr><td>0:10–0:25</td><td><strong>Technical Architecture</strong><br><span style="color:var(--muted);font-size:.8rem;">Owner: Matt + Andrei — Two-stream approach, stored proc migration, Scan Server</span></td></tr>
+        <tr><td>0:25–0:35</td><td><strong>Execution Model</strong><br><span style="color:var(--muted);font-size:.8rem;">Owner: Paul — Timeline, team composition, risk mitigation plan</span></td></tr>
+        <tr><td>0:35–0:45</td><td><strong>Pricing + Fixed-Price Structure</strong><br><span style="color:var(--muted);font-size:.8rem;">Owner: Andrei — $405K breakdown, payment schedule, what's included</span></td></tr>
+        <tr><td>0:45–0:55</td><td><strong>Q&amp;A</strong><br><span style="color:var(--muted);font-size:.8rem;">Owner: All — Open floor, especially for Tom</span></td></tr>
+        <tr><td>0:55–1:00</td><td><strong>Closing Ask</strong><br><span style="color:var(--muted);font-size:.8rem;">Owner: Tyler — Explicitly ask for recommendation, confirm Apr 23 timeline</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Talking Points -->
+  <div class="card">
+    <div class="card-title">💬 Talking Points — If / Then</div>
+    <div class="tp-item tp-green">
+      <div class="tp-if">IF: Pricing pushback</div>
+      Fixed-price protects SPHERE from the 30–50% overrun typical of T&M. They've already paid for two failed migrations. Don't discount immediately — let the protection argument land first.
+    </div>
+    <div class="tp-item tp-green">
+      <div class="tp-if">IF: Timeline concern</div>
+      Two-stream parallel delivery means coding begins day 1 and platform foundation is live in week 1. We don't front-load discovery — we build while learning.
+    </div>
+    <div class="tp-item tp-green">
+      <div class="tp-if">IF: Stored procedure complexity raised</div>
+      We extract domain logic, model it cleanly in the application layer, and run behavior parity validation throughout. This is a known pattern — we've done it before.
+    </div>
+    <div class="tp-item tp-green">
+      <div class="tp-if">IF: Competitor comparison</div>
+      T&M has no ceiling — that's exactly how migrations fail. The other fixed-price option came in too high. VSP is the only vendor offering both protection AND a competitive number.
+    </div>
+    <div class="tp-item tp-green">
+      <div class="tp-if">IF: Tom pushes back</div>
+      Treat as genuinely important — he may have more authority than we know. "Can you say more about that?" — listen fully before responding.
+    </div>
+  </div>
+
+  <!-- Red Flags -->
+  <div class="card" style="border-left:3px solid var(--red);">
+    <div class="card-title" style="color:var(--red);">🚩 Red Flags to Watch</div>
+    <div class="rf-item"><span class="rf-icon">🔴</span><div>Tom Garrity may be more influential than assumed — possible board-appointed evaluator, not just a technical reviewer</div></div>
+    <div class="rf-item"><span class="rf-icon">🔴</span><div>NDA status unconfirmed — paper process could be a hidden blocker</div></div>
+    <div class="rf-item"><span class="rf-icon">🔴</span><div>Rita (Economic Buyer) is NOT on the meeting invite — her absence is notable</div></div>
+    <div class="rf-item"><span class="rf-icon">🔴</span><div>Rosario has expressed reservations about execution capacity — may resurface</div></div>
+    <div class="rf-item"><span class="rf-icon">🔴</span><div>Scope expansion requests = trap — defer everything to SOW 2</div></div>
+    <div class="rf-item"><span class="rf-icon">🔴</span><div>Budget ceiling evasion — if they won't answer, something is off</div></div>
+    <div class="rf-item"><span class="rf-icon">🔴</span><div>"We need more time" = danger signal — board vote is Apr 23. Push for urgency.</div></div>
+  </div>
+
+  <!-- Success Criteria -->
+  <div class="card" style="border-left:3px solid var(--green);">
+    <div class="card-title" style="color:var(--green);">✅ Success Criteria</div>
+    <div class="rf-item"><span class="rf-icon">🥇</span><div><strong>Minimum win:</strong> Rosario says "I'm recommending VSP to the board" — in those words or equivalent</div></div>
+    <div class="rf-item"><span class="rf-icon">🏆</span><div><strong>Full win:</strong> Rosario commits + Tom has no outstanding objections + NDA confirmed + budget understood + contracting path mapped to May 1</div></div>
+    <div class="rf-item"><span class="rf-icon">🔁</span><div><strong>If no commitment on call:</strong> Directly ask — "Rosario, do you have what you need to recommend VSP to the board?"</div></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ======================== PANEL 9: WORLD DOMINATION / 10TALENTS ======================== -->
+<div class="panel" id="panel-9">
+<div class="content">
+  <div class="meeting-header">
+    <div class="meeting-title">World Domination / 10Talents</div>
+    <div class="meeting-badges">
+      <span class="tag tag-green">PROSPECT</span>
+      <span class="tag tag-grey">TOMORROW APR 17</span>
+      <span class="tag tag-purple">NEW</span>
+    </div>
+    <div class="meeting-desc">Strategic conversation with Drew Goudy (10 Talents Investors). Tyler is solo — Paul declined. Drew is a proven connector who already introduced VSP to Radian Capital.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Meeting Details</div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:.5rem .75rem;font-size:.87rem;">
+      <span style="color:var(--dim)">Date</span><span><strong>Tomorrow — Friday, April 17</strong></span>
+      <span style="color:var(--dim)">Time</span><span>11:00 AM ET — 12:00 PM ET (60 min)</span>
+      <span style="color:var(--dim)">Platform</span><span>Google Meet</span>
+    </div>
+    <a href="https://meet.google.com/wdt-xnok-yad" target="_blank" class="join-btn">Join Meet</a>
+  </div>
+
+  <!-- Background -->
+  <div class="card">
+    <div class="card-title">🏢 Background</div>
+    <div style="font-size:.87rem;line-height:1.8;">
+      Drew Goudy is Co-Founder of <strong>10 Talents Investors</strong> — a fund of funds model serving family offices. VSP connection came through Paul at the Snowmass / Aspen event. Drew is a natural connector — he already introduced VSP to Radian Capital. Meeting title "WORLD DOMINATION" = informal, aspirational, strategic tone. Paul declined to attend — <strong>Tyler flying solo</strong>. A "Mitchell" is also joining — full name unknown, role unknown. Identify before or at start of call.
+    </div>
+  </div>
+
+  <!-- Key Contacts -->
+  <div class="card">
+    <div class="card-title">👥 Key Contacts</div>
+    <table class="contacts-table">
+      <thead>
+        <tr><th>Name</th><th>Title / Org</th><th>Location</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Drew Goudy</strong></td>
+          <td>Co-Founder, 10 Talents Investors</td>
+          <td>Orlando, FL</td>
+          <td>Connector, event host. Known referral source — Radian Capital intro was his.</td>
+        </tr>
+        <tr>
+          <td><strong>Mitchell</strong></td>
+          <td>Unknown</td>
+          <td>Unknown</td>
+          <td><span class="tag tag-red">Get full name before call.</span> Role in 10 Talents TBD.</td>
+        </tr>
+        <tr>
+          <td><strong>Paul Doman</strong></td>
+          <td>VSP</td>
+          <td>—</td>
+          <td>Declined attendance. Tyler solo.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Discovery Questions -->
+  <div class="card">
+    <div class="card-title">❓ Discovery Questions</div>
+    <ol style="font-size:.87rem;line-height:2.2;padding-left:1.25rem;">
+      <li>"What's driving the WORLD DOMINATION agenda — what are you building toward?"</li>
+      <li>"How's the fund of funds business evolving right now?"</li>
+      <li>"The Radian intro was gold — how often do you connect people like that? Is that intentional or just how you operate?"</li>
+      <li>"Your LPs are family offices — are they asking about AI yet? What are they worried about?"</li>
+      <li>"Mitchell, how do you fit into the 10 Talents picture?"</li>
+      <li>"Is there a version of what VSP does that would be useful to your investors or the companies they back?"</li>
+    </ol>
+  </div>
+
+  <!-- Post-Call Actions -->
+  <div class="card">
+    <div class="card-title">✅ Post-Call Actions</div>
+    <div class="rf-item"><span class="rf-icon">📌</span><div>Add Mitchell (full name TBD) to Pipedrive as person + org</div></div>
+    <div class="rf-item"><span class="rf-icon">🔄</span><div>Update Drew Goudy's community persona — classify as Investor, Tier 1 referral source</div></div>
+    <div class="rf-item"><span class="rf-icon">🎯</span><div>Log referral attribution for Radian Capital intro — credit Drew</div></div>
+    <div class="rf-item"><span class="rf-icon">💼</span><div>If a real opportunity surfaces, open a deal. Otherwise log as community Networking activity.</div></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+function showTab(idx) {
+  document.querySelectorAll('.panel').forEach(function(p, i) {
+    p.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('.tab-btn').forEach(function(b, i) {
+    b.classList.toggle('active', i === idx);
+  });
+}
+</script>
+
+</body>
+</html>
